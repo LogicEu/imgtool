@@ -1,16 +1,18 @@
 #include <imgtool.h>
 #include <string.h>
 
-#define px_aat(bitmap, x, y) (bitmap.pixels + bitmap.width * y + x)
-#define px_at(bitmap, x, y) (bitmap->pixels + bitmap->width * y + x)
+/**************************************
+ -> Bitmap algorithms and operations <-
+ *************************************/
 
+#define px_aat(bitmap, x, y) (bitmap.pixels + (bitmap.width * y + x) * bitmap.channels)
+#define px_at(bitmap, x, y) (bitmap->pixels + (bitmap->width * y + x) * bitmap->channels)
 #define _lerpf(a, b, t) (float)(a * (1.0 - t) + (b * t))
 #define _inverse_lerpf(a, b, val) (float)((val - a) / (b - a))
 #define _remapf(ia, ib, oa, ob, val) (float)(_lerpf(oa, ob, _inverse_lerpf(ia, ib, val)))
-
 #define ulerp(c1, c2, f) (uint8_t)(unsigned int)(int)(_lerpf((float)(int)c1, (float)(int)c2, f))
 
-static void pxlerp(unsigned char* p1, unsigned char* p2, float f, unsigned int channels, unsigned char* out)
+static void pxlerp(uint8_t* p1, uint8_t* p2, float f, unsigned int channels, uint8_t* out)
 {
     for (unsigned int i = 0; i < channels; i++) {
         out[i] = ulerp(p1[i], p2[i], f);
@@ -253,7 +255,7 @@ bmp_t bmp_resize_width(bmp_t* bmp, unsigned int target_width)
             unsigned int xx = dx - dif;
 
             if (xx + 1 < target_width) {
-                unsigned char out[bmp->channels];
+                uint8_t out[bmp->channels];
                 pxlerp(px_at(bmp, xx, y), px_at(bmp, xx + 1, y), dif, bmp->channels, out);
                 memcpy(px_aat(new_bmp, x, y), out, bmp->channels);
             }

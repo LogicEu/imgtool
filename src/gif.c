@@ -1,6 +1,11 @@
 #include <imgtool.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+
+/************************
+ -> GIF save and load  <- 
+*************************/
 
 #include "gif/gifenc.h"
 #include "gif/gifdec.h"
@@ -121,7 +126,7 @@ void gif_file_write(const char* path, gif_t* input)
     printf("Succesfully writed GIF file '%s'\n", path);
 }
 
-void gif_file_write_frame(const char* path, unsigned char* img, unsigned int width, unsigned int height)
+void gif_file_write_frame(const char* path, uint8_t* img, unsigned int width, unsigned int height)
 {
     ge_GIF *gif = ge_new_gif(path, width, height, NULL, 8, 0);
 
@@ -135,7 +140,7 @@ void gif_file_write_frame(const char* path, unsigned char* img, unsigned int wid
     printf("Succesfully writed GIF file '%s'\n", path);
 }
 
-unsigned char* gif_file_load_frame(const char* path, unsigned int* width, unsigned int* height)
+uint8_t* gif_file_load_frame(const char* path, unsigned int* width, unsigned int* height)
 {
     gd_GIF* gif = gd_open_gif(path);
     if (!gif) {
@@ -150,7 +155,7 @@ unsigned char* gif_file_load_frame(const char* path, unsigned int* width, unsign
     
     *width = gif->width;
     *height = gif->height;
-    unsigned char* frame = (unsigned char*)malloc(gif->width * gif->height * 3);
+    uint8_t* frame = (uint8_t*)malloc(gif->width * gif->height * 3);
     
     gd_render_frame(gif, frame);
     gd_close_gif(gif);

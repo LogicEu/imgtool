@@ -1,18 +1,17 @@
 #include <imgtool.h>
-#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
-/*
---------------------------
- -> IMG Core Functions  <- 
---------------------------
-*/
+/***********************
+ -> img save and load <- 
+***********************/
 
 static int jpeg_quality = 100;
 
 static char* img_parse_suffix(const char* path)
 {
-    size_t size = strlen(path);
+    unsigned int size = strlen(path);
     if (strlen(path) < 5) {
         printf("Invalid path for img file '%s'\n", path);
         return NULL;
@@ -34,14 +33,28 @@ static img_channel_enum img_parse_channels(img_format_enum format)
 
 static img_format_enum img_parse_format(const char* suffix)
 {
-    if (!strcmp(suffix, ".png")) return IMG_FORMAT_PNG;
-    if (!strcmp(suffix, ".jpg") || !strcmp(suffix, "jpeg")) return IMG_FORMAT_JPG;
-    if (!strcmp(suffix, ".ppm")) return IMG_FORMAT_PPM;
-    if (!strcmp(suffix, ".gif")) return IMG_FORMAT_GIF;
+    if (!strcmp(suffix, ".jpg") || 
+        !strcmp(suffix, "jpeg") ||
+        !strcmp(suffix, "JPEG") ||
+        !strcmp(suffix, ".JPG")) {
+        return IMG_FORMAT_JPG;
+    }
+    if (!strcmp(suffix, ".png") ||
+        !strcmp(suffix, ".PNG")) { 
+        return IMG_FORMAT_PNG;
+    }
+    if (!strcmp(suffix, ".ppm") ||
+        !strcmp(suffix, ".PPM")) {
+        return IMG_FORMAT_PPM;
+    }
+    if (!strcmp(suffix, ".gif") || 
+        !strcmp(suffix, ".GIF")) { 
+        return IMG_FORMAT_GIF;
+    }
     return IMG_FORMAT_NULL;
 }
 
-static unsigned char* img_file_load_any(const char* path, unsigned int* width, unsigned int* height, img_format_enum format)
+static uint8_t* img_file_load_any(const char* path, unsigned int* width, unsigned int* height, img_format_enum format)
 {
     if (format == IMG_FORMAT_PNG) {
         return png_file_load(path, width, height);
@@ -55,7 +68,7 @@ static unsigned char* img_file_load_any(const char* path, unsigned int* width, u
     return NULL;
 }
 
-static void img_file_write_any(const char* path, unsigned char* img, unsigned int width, unsigned int height, img_format_enum format)
+static void img_file_write_any(const char* path, uint8_t* img, unsigned int width, unsigned int height, img_format_enum format)
 {
     if (format == IMG_FORMAT_PNG) {
         png_file_write(path, img, width, height);
@@ -68,9 +81,9 @@ static void img_file_write_any(const char* path, unsigned char* img, unsigned in
     } else printf("Format is not supported to write.\n");
 }
 
-unsigned char* img_transform_buffer(unsigned char* buffer, unsigned int width, unsigned int height, unsigned int src, unsigned int dest)
+uint8_t* img_transform_buffer(uint8_t* buffer, unsigned int width, unsigned int height, unsigned int src, unsigned int dest)
 {
-    unsigned char* ret = NULL;
+    uint8_t* ret = NULL;
     if (src == IMG_RGB && dest == IMG_RGBA) {
         ret = rgb_to_rgba(buffer, width, height);
     } else if (src == IMG_RGBA && dest == IMG_RGB) {
@@ -83,7 +96,7 @@ unsigned char* img_transform_buffer(unsigned char* buffer, unsigned int width, u
     return ret;
 }
 
-unsigned char* img_file_load(const char* path, unsigned int* width, unsigned int* height, unsigned int* out_channels)
+uint8_t* img_file_load(const char* path, unsigned int* width, unsigned int* height, unsigned int* out_channels)
 {
     char* suffix = img_parse_suffix(path);
     if (!suffix) return NULL;
@@ -95,7 +108,7 @@ unsigned char* img_file_load(const char* path, unsigned int* width, unsigned int
         return NULL;
     }
 
-    unsigned char* buffer = img_file_load_any(path, width, height, format);
+    uint8_t* buffer = img_file_load_any(path, width, height, format);
     if (!buffer) {
         printf("There was a problem loading file '%s'\n", path);
         return NULL;
@@ -103,7 +116,7 @@ unsigned char* img_file_load(const char* path, unsigned int* width, unsigned int
     return buffer;
 }
 
-void img_file_write(const char* path, unsigned char* img, unsigned int width, unsigned int height, unsigned int in_channels)
+void img_file_write(const char* path, uint8_t* img, unsigned int width, unsigned int height, unsigned int in_channels)
 {
     char* suffix = img_parse_suffix(path);
     if (!suffix) {
@@ -119,7 +132,7 @@ void img_file_write(const char* path, unsigned char* img, unsigned int width, un
     }
 
     if (in_channels != parse_channel) {
-        unsigned char* buffer = img_transform_buffer(img, width, height, in_channels, parse_channel);
+        uint8_t* buffer = img_transform_buffer(img, width, height, in_channels, parse_channel);
         if (!buffer) {
             printf("There was a problem transforming file '%s'\n", path);
             return;
@@ -134,9 +147,9 @@ void img_set_jpeg_quality(int quality)
     jpeg_quality = quality;
 }
 
-unsigned char* img_jcompress(unsigned char* img, unsigned int width, unsigned int height, unsigned int channels, unsigned int quality)
+uint8_t* img_jcompress(uint8_t* img, unsigned int width, unsigned int height, unsigned int channels, unsigned int quality)
 {
-    unsigned char* buffer;
+    uint8_t* buffer;
     if (channels != IMG_RGB) {
         buffer = img_transform_buffer(img, width, height, channels, IMG_RGB);
         if (!buffer) {
@@ -145,9 +158,9 @@ unsigned char* img_jcompress(unsigned char* img, unsigned int width, unsigned in
         }
     } else buffer = img;
 
-    size_t size;
-    unsigned char* compress = jpeg_compress(buffer, &size, width, height, quality);
-    unsigned char* decompress = jpeg_decompress(compress, size);
+    unsigned int size;
+    uint8_t* compress = jpeg_compress(buffer, &size, width, height, quality);
+    uint8_t* decompress = jpeg_decompress(compress, size);
 
     if (channels != IMG_RGB) free(buffer);
     free(compress);

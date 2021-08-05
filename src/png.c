@@ -1,14 +1,13 @@
 #include <imgtool.h>
+#include <stdlib.h>
 #include <string.h>
 #include <png.h>
 
-/*
---------------------------
- -> Basic PNG File I/O  <- 
---------------------------
-*/
+/***********************
+ -> PNG save and load <- 
+***********************/
 
-unsigned char* png_file_load(const char* path, unsigned int* width, unsigned int* height)
+uint8_t* png_file_load(const char* path, unsigned int* width, unsigned int* height)
 {
     FILE *file = fopen(path, "rb");
     if (!file) {
@@ -51,7 +50,7 @@ unsigned char* png_file_load(const char* path, unsigned int* width, unsigned int
     }
     png_read_image(png, row_pointers);
 
-    unsigned char* data = (unsigned char*)malloc(h * w * 4);
+    uint8_t* data = (uint8_t*)malloc(h * w * 4);
     unsigned int i = 0;
     for (unsigned int y = 0; y < h; y++) {
         png_bytep row = row_pointers[y];
@@ -72,7 +71,7 @@ unsigned char* png_file_load(const char* path, unsigned int* width, unsigned int
     return data;
 }
 
-void png_file_write(const char* path, unsigned char* data, unsigned int width, unsigned int height) 
+void png_file_write(const char* path, uint8_t* data, unsigned int width, unsigned int height) 
 {
     FILE* file = fopen(path, "wb");
     if (!file) {

@@ -1,11 +1,10 @@
 #include <imgtool.h>
+#include <stdlib.h>
 #include <string.h>
 
-/*
--------------------------------------------------
- -> bitmap data structure and basic operations <- 
--------------------------------------------------
-*/
+/***************************
+ -> Bitmap Data Structure <-
+ **************************/
 
 bmp_t bmp_new(unsigned int width, unsigned int height, unsigned int channels)
 {

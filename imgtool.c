@@ -1,6 +1,7 @@
 #include <imgtool.h>
-#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 typedef enum {
     IMG_COMMAND_NULL,
@@ -27,23 +28,6 @@ static unsigned int sensibility = 255;
 static unsigned int resize_x, resize_y;
 static float resize_scale;
 
-static char* output_num_string(const char* output_path, unsigned int num)
-{
-    const unsigned int size = strlen(output_path);
-    if (size < 5) return NULL;
-
-    char* ret = (char*)malloc(256);
-    memcpy(ret, output_path, size - 4);
-    ret[size - 4] = '\0';
-
-    char num_str[32];
-    sprintf(num_str, "%03d", num);
-    
-    strcat(ret, num_str);
-    strcat(ret, &output_path[size - 4]);
-    return ret;
-}
-
 #define bmp_swap(func, bmp)                 \
 do {                                        \
     bmp_t b = func(bmp);                    \
@@ -58,9 +42,9 @@ do {                                        \
     memcpy(bmp, &b, sizeof(bmp_t));         \
 } while (0)
 
-static void command_execute(unsigned int IMG_COMMAND, bmp_t* bitmap)
+static void command_execute(unsigned int command, bmp_t* bitmap)
 {
-    switch (IMG_COMMAND) {
+    switch (command) {
         case IMG_COMMAND_BLACK_AND_WHITE: {
             bmp_swap(bmp_black_and_white, bitmap);
             break;
@@ -120,19 +104,21 @@ static void command_execute(unsigned int IMG_COMMAND, bmp_t* bitmap)
     }
 }
 
-static void frame_dump(unsigned char* img, unsigned int width, unsigned int height, unsigned int channels)
+static char* output_num_string(const char* output_path, unsigned int num)
 {
-    printf("Width: %u, Height: %u, Channels: %u\n", width, height, channels);
-    for (unsigned int y = 0; y < height; y++) {
-        for (unsigned int x = 0; x < width; x++) {
-            printf("(%u", *(img + (width * y + x) * channels));
-            for (unsigned int i = 1; i < channels; i++) {
-                printf("-%u", *(img + (width * y + x) * channels + i));
-            }
-            printf(") ");
-        }
-        printf("\n");
-    }
+    const unsigned int size = strlen(output_path);
+    if (size < 5) return NULL;
+
+    char* ret = (char*)malloc(256);
+    memcpy(ret, output_path, size - 4);
+    ret[size - 4] = '\0';
+
+    char num_str[32];
+    sprintf(num_str, "%03d", num);
+    
+    strcat(ret, num_str);
+    strcat(ret, &output_path[size - 4]);
+    return ret;
 }
 
 static long get_file_size(const char* path)
@@ -146,6 +132,21 @@ static long get_file_size(const char* path)
     long ret = ftell(file);
     fclose(file);
     return ret;
+}
+
+static void frame_dump(unsigned char* img, unsigned int width, unsigned int height, unsigned int channels)
+{
+    printf("Width: %u, Height: %u, Channels: %u\n", width, height, channels);
+    for (unsigned int y = 0; y < height; y++) {
+        for (unsigned int x = 0; x < width; x++) {
+            printf("(%u", *(img + (width * y + x) * channels));
+            for (unsigned int i = 1; i < channels; i++) {
+                printf(" %u ", *(img + (width * y + x) * channels + i));
+            }
+            printf(") ");
+        }
+        printf("\n");
+    }
 }
 
 static void dump_file(bmp_t* bitmap, const char* path)
@@ -174,29 +175,29 @@ static void print_help()
     printf("a scale-down and a grey scale effect to the original input files.\n");
     printf("The following are the commands and flags supported.\n\n");
 
-    printf("'-o':\t\tWrite the output image file to the path and format following this flag.\n");
-    printf("'-I':\t\tWrite the output to the same file path and format as input.\n");
-    printf("'-n'\t\tNo output.\n");
-    printf("'-d':\t\tDump main info about image file.\n");
-    printf("'-D':\t\tDump image frame buffer as RGB/A values.\n");
-    printf("'-j':\t\tCompress image using JPEG compression (lossy).\n");
-    printf("'-bw':\t\tTransform to black and white.\n");
-    printf("'-N':\t\tTransform to negative RGB values.\n");
-    printf("'-cut':\t\tCut corners of the image when they are transparent.\n");
-    printf("'-r':\t\tRotate by 90 degrees.\n");
-    printf("'-S':\t\tScale up image by factor of two (nearest).\n");
-    printf("'-s':\t\tScale down image by factor of two (linear).\n");
-    printf("'-fh':\t\tFlip the image horizontally.\n");
-    printf("'-fv'\t\tFlip the image vertically.\n");
-    printf("'-Rx':\t\tResize width of image to specified width.\n");
-    printf("'-Ry':\t\tResize height of image to specified height.\n");
-    printf("'-R':\t\tResize scale of image to specified floating point number.\n");
-    printf("'-t'\t\tSet white to transparent. Needs alpha channel present.\n");
-    printf("'-T'\t\tSet clear colors to transparent with a sensibility between 0 and 255.\n");
-    printf("'-q':\t\tSet quality for JPEG compression output when writing to JPG.\n");
-    printf("'-to-gif':\tWrite output images to a single output GIF file.\n");
-    printf("'-from-gif':\tTake every frame of input GIF file as input images.\n");
-    printf("'-open':\tOpen the first output image after process is completed.\n");
+    printf("-o:\t\tWrite the output image file to the path and format following this flag.\n");
+    printf("-I:\t\tWrite the output to the same file path and format as input.\n");
+    printf("-n\t\tNo output.\n");
+    printf("-d:\t\tDump main info about image file.\n");
+    printf("-D:\t\tDump image frame buffer as RGB/A values.\n");
+    printf("-j:\t\tCompress image using JPEG compression (lossy).\n");
+    printf("-bw:\t\tTransform to black and white.\n");
+    printf("-N:\t\tTransform to negative RGB values.\n");
+    printf("-cut:\t\tCut corners of the image when they are transparent.\n");
+    printf("-r:\t\tRotate by 90 degrees.\n");
+    printf("-S:\t\tScale up image by factor of two (nearest).\n");
+    printf("-s:\t\tScale down image by factor of two (linear).\n");
+    printf("-fh:\t\tFlip the image horizontally.\n");
+    printf("-fv\t\tFlip the image vertically.\n");
+    printf("-Rx:\t\tResize width of image to specified width.\n");
+    printf("-Ry:\t\tResize height of image to specified height.\n");
+    printf("-R:\t\tResize scale of image to specified floating point number.\n");
+    printf("-t\t\tSet white to transparent. Needs alpha channel present.\n");
+    printf("-T\t\tSet clear colors to transparent with a sensibility between 0 and 255.\n");
+    printf("-q:\t\tSet quality for JPEG compression output when writing to JPG.\n");
+    printf("-to-gif:\tWrite output images to a single output GIF file.\n");
+    printf("-from-gif:\tTake every frame of input GIF file as input images.\n");
+    printf("-open:\tOpen the first output image after process is completed.\n");
 }
 
 int main(int argc, char** argv)
@@ -296,9 +297,9 @@ int main(int argc, char** argv)
         if (command_count == 255 || input_count == 255) break;
     }
 
-    /*********
-     * FAIL
-     * ******/
+    /*******
+      FAIL
+     ******/
     
     if (!input_count) {
         printf("Missing input image file. See -help for more info.\n");
@@ -309,9 +310,9 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    /************************
-     * LOAD INPUT IMAGE FILES
-     * *********************/
+    /***********************
+      LOAD INPUT IMAGE FILES
+     **********************/
 
     bmp_t* bitmaps;
     if (input_from_gif) {
@@ -341,26 +342,28 @@ int main(int argc, char** argv)
      * WRITE OUTPUT FILES
      * ******************/
 
+#define _open_at_exit(check, str, path)     \
+do {                                        \
+    if (check) {                            \
+        strcat(str, path);                  \
+        system(str);                        \
+    }                                       \
+} while(0)                              
+
     char open_str[256] = "open ";
 
     if (output_to_gif) {
         gif_t* g = bmp_to_gif(bitmaps, input_count);
         gif_file_write(output_path, g);
         gif_free(g);
-        if (open_at_exit) {
-            strcat(open_str, output_path);
-            system(&open_str[0]);
-        }
+        _open_at_exit(open_at_exit, open_str, output_path);
     }
     else if (output_to_input) {
         for (unsigned int i = 0; i < input_count; i++) {
             bmp_write(input_path[i], &bitmaps[i]);
             bmp_free(&bitmaps[i]);
         }
-        if (open_at_exit) {
-            strcat(open_str, input_path[0]);
-            system(&open_str[0]);
-        }
+        _open_at_exit(open_at_exit, open_str, input_path[0]);
     } else if (output_count) {
         if (input_count > 1) {
             for (unsigned int i = 0; i < input_count; i++) {
@@ -368,17 +371,11 @@ int main(int argc, char** argv)
                 bmp_write(output_path_num, &bitmaps[i]);
                 bmp_free(&bitmaps[i]);
             }
-            if (open_at_exit) {
-                strcat(open_str, output_num_string(output_path, 0));
-                system(&open_str[0]);
-            }
+            _open_at_exit(open_at_exit, open_str, output_num_string(output_path, 0));
         } else {
             bmp_write(output_path, bitmaps);
             bmp_free(bitmaps);
-            if (open_at_exit) {
-                strcat(open_str, output_path);
-                system(&open_str[0]);
-            }
+            _open_at_exit(open_at_exit, open_str, output_path);
         }
     } 
     

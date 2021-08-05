@@ -1,13 +1,12 @@
 #include <imgtool.h>
+#include <stdlib.h>
 #include <stdio.h>
 
-/*
---------------------------
- -> Basic PPM File I/O  <- 
---------------------------
-*/
+/************************
+ -> PPM save and load  <- 
+************************/
 
-unsigned char* ppm_file_load(const char* path, unsigned int* width, unsigned int* height)
+uint8_t* ppm_file_load(const char* path, unsigned int* width, unsigned int* height)
 {
     FILE* file = fopen(path, "rb");
     if (!file) {
@@ -19,13 +18,13 @@ unsigned char* ppm_file_load(const char* path, unsigned int* width, unsigned int
     fgets(header, 256, file);
     sscanf(header, "P6 %d %d 255", width, height);
 
-    unsigned char* ret = (unsigned char*)malloc(*width * *height * 3);
+    uint8_t* ret = (uint8_t*)malloc(*width * *height * 3);
     fread(ret, 3, *width * *height, file);
     fclose(file);
     return ret;
 }
 
-void ppm_file_write(const char* path, unsigned char* img, unsigned int width, unsigned int height)
+void ppm_file_write(const char* path, uint8_t* img, unsigned int width, unsigned int height)
 {
     FILE* file = fopen(path, "wb");
     if (!file) {
