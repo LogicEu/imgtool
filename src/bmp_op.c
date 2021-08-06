@@ -5,10 +5,10 @@
  -> Bitmap algorithms and operations <-
  *************************************/
 
-#define px_aat(bitmap, x, y) (uint8_t*)(bitmap.pixels + (bitmap.width * y + x) * bitmap.channels)
-#define px_at(bitmap, x, y) (uint8_t*)(bitmap->pixels + (bitmap->width * y + x) * bitmap->channels)
-#define _lerpf(a, b, t) (float)(a * (1.0 - t) + (b * t))
-#define _inverse_lerpf(a, b, val) (float)((val - a) / (b - a))
+#define px_aat(bitmap, x, y) (uint8_t*)(bitmap.pixels + ((bitmap.width * (y)) + (x)) * bitmap.channels)
+#define px_at(bitmap, x, y) (uint8_t*)(bitmap->pixels + ((bitmap->width * (y)) + (x)) * bitmap->channels)
+#define _lerpf(a, b, t) (float)((a) * (1.0 - (t)) + ((b) * (t)))
+#define _inverse_lerpf(a, b, val) (float)(((val) - (a)) / ((b) - (a)))
 #define _remapf(ia, ib, oa, ob, val) (float)(_lerpf(oa, ob, _inverse_lerpf(ia, ib, val)))
 #define ulerp(c1, c2, f) (uint8_t)(unsigned int)(int)(_lerpf((float)(int)c1, (float)(int)c2, f))
 
