@@ -67,6 +67,11 @@ comp() {
     gcc ${flags[*]} ${inc[*]} ${lib[*]} -L. -l$name  *.c -o $name
 }
 
+clean() {
+    rm $name
+    rm lib$name.a
+}
+
 install() {
     mv $name /usr/local/bin/$name
 }
@@ -84,6 +89,8 @@ elif [[ "$1" == "-install" ]]; then
     slib
     comp
     install
+elif [[ "$1" == "-clean" ]]; then
+    clean
 else
     fail_op
 fi 
