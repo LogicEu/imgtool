@@ -1,5 +1,6 @@
 #!/bin/bash
 
+comp=gcc
 name=imgtool
 
 src=(
@@ -39,12 +40,12 @@ fail_os() {
 }
 
 mac_dlib() {
-    gcc ${flags[*]} ${inc[*]} ${lib[*]} -dynamiclib ${src[*]} -o lib$name.dylib
+    $comp ${flags[*]} ${inc[*]} ${lib[*]} -dynamiclib ${src[*]} -o lib$name.dylib
     install_name_tool -id @executable_path/lib$name.dylib lib$name.dylib 
 }
 
 linux_dlib() {
-    gcc -shared ${flags[*]} ${inc[*]} ${lib[*]} -fPIC ${src[*]} -o lib$name.so 
+    $comp -shared ${flags[*]} ${inc[*]} ${lib[*]} -fPIC ${src[*]} -o lib$name.so 
 }
 
 dlib() {
@@ -58,13 +59,13 @@ dlib() {
 }
 
 slib() {
-    gcc ${flags[*]} ${inc[*]} -c ${src[*]}
+    $comp ${flags[*]} ${inc[*]} -c ${src[*]}
     ar -crv lib$name.a *.o
     rm *.o
 }
 
-comp() {
-    gcc ${flags[*]} ${inc[*]} ${lib[*]} -L. -l$name  *.c -o $name
+compile() {
+    $comp *.c ${flags[*]} -I. -L. -l$name ${lib[*]} -o $name
 }
 
 clean() {
@@ -84,10 +85,10 @@ elif [[ "$1" == "-slib" ]]; then
     slib
 elif [[ "$1" == "-comp" ]]; then
     slib
-    comp
+    compile
 elif [[ "$1" == "-install" ]]; then
     slib
-    comp
+    compile
     install
 elif [[ "$1" == "-clean" ]]; then
     clean
