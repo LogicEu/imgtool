@@ -33,7 +33,7 @@ bmp_t bmp_color(unsigned int width, unsigned int height, unsigned int channels, 
     bmp_t bitmap = bmp_new(width, height, channels);
     for (unsigned int y = 0; y < height; y ++) {
         for (unsigned int x = 0; x < width; x ++) {
-            memcpy(bitmap.pixels + width * y + x, color, channels);
+            memcpy(bitmap.pixels + (width * y + x) * bitmap.channels, color, channels);
         }
     }
     return bitmap;

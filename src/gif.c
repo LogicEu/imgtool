@@ -15,29 +15,6 @@
 
 extern uint8_t vga[0x30];
 
-static gif_t* gif_new(unsigned int width, unsigned int height, uint8_t* background)
-{
-    gif_t* gif = (gif_t*)malloc(sizeof(gif_t));
-    gif->width = width;
-    gif->height = height;
-    memcpy(gif->background, background, 3);
-    
-    gif->used = 0;
-    gif->size = 1;
-    gif->frames = (uint8_t**)malloc(gif->size * sizeof(uint8_t*));
-    return gif;
-}
-
-static void gif_push_frame(gif_t* gif, uint8_t* frame)
-{
-    if (gif->used >= gif->size) {
-        gif->size *= 2;
-        gif->frames = (uint8_t**)realloc(gif->frames, gif->size * 3);
-    }
-    gif->frames[gif->used] = (uint8_t*)malloc(gif->width * gif->height * 3);
-    memcpy(gif->frames[gif->used++], frame, gif->width * gif->height * 3);
-}
-
 static uint8_t rgb_palette_256(uint8_t* rgb)
 {
     int dif[256], i = 0;
@@ -78,6 +55,29 @@ static uint8_t rgb_palette_256(uint8_t* rgb)
     return mark;
 }
 
+static gif_t* gif_new(unsigned int width, unsigned int height, uint8_t* background)
+{
+    gif_t* gif = (gif_t*)malloc(sizeof(gif_t));
+    gif->width = width;
+    gif->height = height;
+    memcpy(gif->background, background, 3);
+    
+    gif->used = 0;
+    gif->size = 1;
+    gif->frames = (uint8_t**)malloc(gif->size * sizeof(uint8_t*));
+    return gif;
+}
+
+static void gif_push_frame(gif_t* gif, uint8_t* frame)
+{
+    if (gif->used >= gif->size) {
+        gif->size *= 2;
+        gif->frames = (uint8_t**)realloc(gif->frames, gif->size * sizeof(uint8_t*));
+    }
+    gif->frames[gif->used] = (uint8_t*)malloc(gif->width * gif->height * 3);
+    memcpy(gif->frames[gif->used++], frame, gif->width * gif->height * 3);
+}
+
 void gif_free(gif_t* gif)
 {
     for (unsigned int i = 0; i < gif->used; i++) {
@@ -116,7 +116,7 @@ void gif_file_write(const char* path, gif_t* input)
     for (unsigned int i = 0; i < input->used; i++) {
         for (unsigned int y = 0; y < input->height; y++) {
             for (unsigned int x = 0; x < input->width; x++) {
-                gif->frame[y * input->width + x] = rgb_palette_256(px3_at(input->frames[i], input->width, x, y));
+                gif->frame[(y * input->width + x) * 3] = rgb_palette_256(px3_at(input->frames[i], input->width, x, y));
             }
         }
         ge_add_frame(gif, 10);
@@ -132,7 +132,7 @@ void gif_file_write_frame(const char* path, uint8_t* img, unsigned int width, un
 
     for (unsigned int y = 0; y < height; y++) {
         for (unsigned int x = 0; x < width; x++) {
-            gif->frame[y * width + x] = rgb_palette_256(px3_at(img, width, x, y));
+            gif->frame[(y * width + x) * 3] = rgb_palette_256(px3_at(img, width, x, y));
         }
     }
     ge_add_frame(gif, 10);

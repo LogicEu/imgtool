@@ -142,11 +142,6 @@ void img_file_write(const char* path, uint8_t* img, unsigned int width, unsigned
     } else img_file_write_any(path, img, width, height, format);
 }
 
-void img_set_jpeg_quality(int quality)
-{
-    jpeg_quality = quality;
-}
-
 uint8_t* img_jcompress(uint8_t* img, unsigned int width, unsigned int height, unsigned int channels, unsigned int quality)
 {
     uint8_t* buffer;
@@ -165,4 +160,9 @@ uint8_t* img_jcompress(uint8_t* img, unsigned int width, unsigned int height, un
     if (channels != IMG_RGB) free(buffer);
     free(compress);
     return decompress;
+}
+
+void img_set_jpeg_quality(int quality)
+{
+    jpeg_quality = quality;
 }
