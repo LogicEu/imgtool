@@ -79,7 +79,7 @@ ge_GIF *ge_new_gif(
 {
     int i, r, g, b, v;
     int store_gct, custom_gct;
-    ge_GIF *gif = calloc(1, sizeof(*gif) + 2*width*height);
+    ge_GIF *gif = calloc(1, sizeof(*gif) + 2 * width * height);
     if (!gif)
         goto no_gif;
     gif->w = width; gif->h = height;

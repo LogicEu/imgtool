@@ -123,7 +123,6 @@ void img_file_write(const char* path, uint8_t* img, unsigned int width, unsigned
         printf("Invalid suffix '%s' for output file\n", suffix);
         return;
     }
-
     img_format_enum format = img_parse_format(suffix);
     img_channel_enum parse_channel = img_parse_channels(format);
     if (!format || !parse_channel) {

@@ -39,7 +39,7 @@ typedef struct {
 typedef struct {
     unsigned int size, used, width, height;
     uint8_t** frames;
-    uint8_t background[4];
+    uint8_t background[3];
 } gif_t;
 
 /***********************

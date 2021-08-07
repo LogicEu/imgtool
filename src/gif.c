@@ -10,8 +10,8 @@
 #include "gif/gifenc.h"
 #include "gif/gifdec.h"
 
-#define absi(i) (i * (i >= 0) - i * (i < 0))
-#define px3_at(buff, width, x, y) (buff + (y * width + x) * 3)
+#define absi(i) ((i) * ((i) >= 0) - (i) * ((i) < 0))
+#define px3_at(buff, width, x, y) (buff + (((y) * (width)) + (x)) * 3)
 
 extern uint8_t vga[0x30];
 
@@ -74,8 +74,7 @@ static void gif_push_frame(gif_t* gif, uint8_t* frame)
         gif->size *= 2;
         gif->frames = (uint8_t**)realloc(gif->frames, gif->size * sizeof(uint8_t*));
     }
-    gif->frames[gif->used] = (uint8_t*)malloc(gif->width * gif->height * 3);
-    memcpy(gif->frames[gif->used++], frame, gif->width * gif->height * 3);
+    gif->frames[gif->used++] = frame;
 }
 
 void gif_free(gif_t* gif)
@@ -116,7 +115,7 @@ void gif_file_write(const char* path, gif_t* input)
     for (unsigned int i = 0; i < input->used; i++) {
         for (unsigned int y = 0; y < input->height; y++) {
             for (unsigned int x = 0; x < input->width; x++) {
-                gif->frame[(y * input->width + x) * 3] = rgb_palette_256(px3_at(input->frames[i], input->width, x, y));
+                gif->frame[y * input->width + x] = rgb_palette_256(px3_at(input->frames[i], input->width, x, y));
             }
         }
         ge_add_frame(gif, 10);
@@ -132,9 +131,10 @@ void gif_file_write_frame(const char* path, uint8_t* img, unsigned int width, un
 
     for (unsigned int y = 0; y < height; y++) {
         for (unsigned int x = 0; x < width; x++) {
-            gif->frame[(y * width + x) * 3] = rgb_palette_256(px3_at(img, width, x, y));
+            gif->frame[y * width + x] = rgb_palette_256(px3_at(img, width, x, y));
         }
     }
+
     ge_add_frame(gif, 10);
     ge_close_gif(gif);
     printf("Succesfully writed GIF file '%s'\n", path);
