@@ -74,7 +74,7 @@ clean() {
 }
 
 install() {
-    cp $name /usr/local/bin/$name
+    sudo cp $name /usr/local/bin/$name
 }
 
 if [[ $# < 1 ]]; then 
