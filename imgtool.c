@@ -197,7 +197,7 @@ static void print_help()
     printf("-q:\t\tSet quality for JPEG compression output when writing to JPG.\n");
     printf("-to-gif:\tWrite output images to a single output GIF file.\n");
     printf("-from-gif:\tTake every frame of input GIF file as input images.\n");
-    printf("-open:\tOpen the first output image after process is completed.\n");
+    printf("-open:\t\tOpen the first output image after process is completed.\n");
 }
 
 int main(int argc, char** argv)
@@ -216,8 +216,14 @@ int main(int argc, char** argv)
         if (!strcmp(argv[i], "-help")) {
             print_help();
             return EXIT_SUCCESS;
+        }
+
+        if (!strcmp(argv[i], "-version")) {
+            printf("imgtool version 0.0.1 Beta\n");
+            return EXIT_SUCCESS;
         } 
-        else if (!strcmp(argv[i], "-o") && i + 1 < argc) {
+        
+        if (!strcmp(argv[i], "-o") && i + 1 < argc) {
             strcpy(output_path, argv[++i]);
             command_count++;
         }
@@ -296,10 +302,6 @@ int main(int argc, char** argv)
 
         if (command_count == 255 || input_count == 255) break;
     }
-
-    /*******
-      FAIL
-     ******/
     
     if (!input_count) {
         printf("Missing input image file. See -help for more info.\n");
@@ -309,10 +311,6 @@ int main(int argc, char** argv)
         printf("Missing command to execute. See -help for more info.\n");
         return EXIT_FAILURE;
     }
-
-    /***********************
-      LOAD INPUT IMAGE FILES
-     **********************/
 
     bmp_t* bitmaps;
     if (input_from_gif) {
@@ -326,10 +324,6 @@ int main(int argc, char** argv)
         }
     }
 
-    /*******************************
-     * APPLY COMMANDS AND OPERATIONS
-     * ****************************/
-
     for (unsigned int i = 0; i < input_count; i++) {
         for (unsigned int j = 0; j < command_count; j++) {
             if (commands[j] == IMG_COMMAND_DUMP) dump_file(&bitmaps[i], input_path[i]);
@@ -337,10 +331,6 @@ int main(int argc, char** argv)
             else command_execute(commands[j], &bitmaps[i]);
         }
     }
-
-    /********************
-     * WRITE OUTPUT FILES
-     * ******************/
 
 #define _open_at_exit(check, str, path)     \
 do {                                        \

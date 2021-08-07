@@ -74,7 +74,7 @@ clean() {
 }
 
 install() {
-    mv $name /usr/local/bin/$name
+    cp $name /usr/local/bin/$name
 }
 
 if [[ $# < 1 ]]; then 
@@ -90,6 +90,7 @@ elif [[ "$1" == "-install" ]]; then
     slib
     compile
     install
+    clean
 elif [[ "$1" == "-clean" ]]; then
     clean
 else
