@@ -1,6 +1,6 @@
 #!/bin/bash
 
-comp=gcc
+cc=gcc
 name=imgtool
 
 src=(
@@ -40,12 +40,12 @@ fail_os() {
 }
 
 mac_dlib() {
-    $comp ${flags[*]} ${inc[*]} ${lib[*]} -dynamiclib ${src[*]} -o lib$name.dylib
+    $cc ${flags[*]} ${inc[*]} ${lib[*]} -dynamiclib ${src[*]} -o lib$name.dylib &&\
     install_name_tool -id @executable_path/lib$name.dylib lib$name.dylib 
 }
 
 linux_dlib() {
-    $comp -shared ${flags[*]} ${inc[*]} ${lib[*]} -fPIC ${src[*]} -o lib$name.so 
+    $cc -shared ${flags[*]} ${inc[*]} ${lib[*]} -fPIC ${src[*]} -o lib$name.so 
 }
 
 dlib() {
@@ -59,13 +59,11 @@ dlib() {
 }
 
 slib() {
-    $comp ${flags[*]} ${inc[*]} -c ${src[*]}
-    ar -crv lib$name.a *.o
-    rm *.o
+    $cc ${flags[*]} ${inc[*]} -c ${src[*]} && ar -crv lib$name.a *.o && rm *.o
 }
 
 compile() {
-    $comp *.c ${flags[*]} -I. -L. -l$name ${lib[*]} -o $name
+    $cc *.c ${flags[*]} -I. -L. -l$name ${lib[*]} -o $name
 }
 
 clean() {
@@ -77,22 +75,17 @@ install() {
     sudo cp $name /usr/local/bin/$name
 }
 
-if [[ $# < 1 ]]; then 
-    fail_op
-elif [[ "$1" == "-dlib" ]]; then
-    dlib
-elif [[ "$1" == "-slib" ]]; then
-    slib
-elif [[ "$1" == "-comp" ]]; then
-    slib
-    compile
-elif [[ "$1" == "-install" ]]; then
-    slib
-    compile
-    install
-    clean
-elif [[ "$1" == "-clean" ]]; then
-    clean
-else
-    fail_op
-fi 
+case "$1" in
+    "-dlib")
+        dlib;;
+    "-slib")
+        slib;;
+    "-comp")
+        slib && compile;;
+    "-install")
+        slib && compile && install;;
+    "-clean")
+        clean;;
+    *)
+        fail_op;;
+esac
