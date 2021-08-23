@@ -6,6 +6,11 @@
  -> Bitmap Data Structure <-
  **************************/
 
+uint8_t* px_at(bmp_t* bmp, unsigned int x, unsigned int y)
+{
+    return bmp->pixels + (bmp->width * y + x) * bmp->channels;
+}
+
 bmp_t bmp_new(unsigned int width, unsigned int height, unsigned int channels)
 {
     bmp_t bitmap;
