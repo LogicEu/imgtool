@@ -25,17 +25,17 @@ else
 	LIB=lib$(NAME).so
 endif
 
-$(NAME): $(LPATH) $(NAME).c
-	$(CC) -o $@ $(NAME).c $(CFLAGS) $(LFLAGS)
-
 $(LPATH): $(SRC)
 	$(CC) $(CFLAGS) -c $^ && ar -crv $@ *.o && rm *.o
+
+$(NAME): $(LPATH) $(NAME).c
+	$(CC) -o $@ $(NAME).c $(CFLAGS) $(LFLAGS)
 
 shared: $(SRC)
 	$(CC) -o $(LIB) $(SRC) $(CFLAGS) $(LIBS) $(OSFLAGS)
 
 clean:
-	rm $(NAME) && rm $(LPATH)
+	rm $(LPATH)
 	
 install: $(NAME)
-	sudo cp $(NAME) /usr/local/bin/
+	sudo mv $(NAME) /usr/local/bin/

@@ -21,7 +21,7 @@ typedef enum {
     IMG_COMMAND_RESIZE_WIDTH,
     IMG_COMMAND_RESIZE_HEIGHT,
     IMG_COMMAND_RESIZE_F
-} img_command_enum;
+} imgtool_command_enum;
 
 static unsigned int jcompress_quality = 100;
 static unsigned int sensibility = 255;
@@ -42,7 +42,7 @@ do {                                        \
     memcpy(bmp, &b, sizeof(bmp_t));         \
 } while (0)
 
-static void command_execute(unsigned int command, bmp_t* bitmap)
+static void imgtool_command(unsigned int command, bmp_t* bitmap)
 {
     switch (command) {
         case IMG_COMMAND_BLACK_AND_WHITE: {
@@ -104,7 +104,7 @@ static void command_execute(unsigned int command, bmp_t* bitmap)
     }
 }
 
-static char* output_num_string(const char* output_path, unsigned int num)
+static char* imgtool_output_strnum(const char* output_path, unsigned int num)
 {
     const unsigned int size = strlen(output_path);
     if (size < 5) return NULL;
@@ -121,7 +121,7 @@ static char* output_num_string(const char* output_path, unsigned int num)
     return ret;
 }
 
-static long get_file_size(const char* path)
+static long imgtool_file_size(const char* path)
 {
     FILE* file = fopen(path, "rb");
     if (!file) {
@@ -134,7 +134,7 @@ static long get_file_size(const char* path)
     return ret;
 }
 
-static void frame_dump(unsigned char* img, unsigned int width, unsigned int height, unsigned int channels)
+static void imgtool_dump_data(unsigned char* img, unsigned int width, unsigned int height, unsigned int channels)
 {
     printf("Width: %u, Height: %u, Channels: %u\n", width, height, channels);
     for (unsigned int y = 0; y < height; y++) {
@@ -149,10 +149,10 @@ static void frame_dump(unsigned char* img, unsigned int width, unsigned int heig
     }
 }
 
-static void dump_file(bmp_t* bitmap, const char* path)
+static void imgtool_dump_file(bmp_t* bitmap, const char* path)
 {
     if (!strlen(path)) return;
-    long size = get_file_size(path);
+    long size = imgtool_file_size(path);
     printf("File Name:\t'%s'\n", path);
     printf("File Size:\t%ldKb\t (%ldBytes)\n", size >> 10, size);
     printf("Image Width:\t%u px\n", bitmap->width);
@@ -160,7 +160,7 @@ static void dump_file(bmp_t* bitmap, const char* path)
     printf("Image Channels:\t%u\n", bitmap->channels);
 }
 
-static void print_help()
+static void imgtool_help()
 {
     printf("\n**** IMGTOOL: COMMAND LINE HANDY IMAGE TOOL ****\n\n");
     printf("Enter up to 256 input image files and up to 256 commands to execute.\n");
@@ -214,7 +214,7 @@ int main(int argc, char** argv)
 
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "-help")) {
-            print_help();
+            imgtool_help();
             return EXIT_SUCCESS;
         }
 
@@ -326,9 +326,9 @@ int main(int argc, char** argv)
 
     for (unsigned int i = 0; i < input_count; i++) {
         for (unsigned int j = 0; j < command_count; j++) {
-            if (commands[j] == IMG_COMMAND_DUMP) dump_file(&bitmaps[i], input_path[i]);
-            if (commands[j] == IMG_COMMAND_FRAME_DUMP) frame_dump(bitmaps[i].pixels, bitmaps[i].width, bitmaps[i].height, bitmaps[i].channels);
-            else command_execute(commands[j], &bitmaps[i]);
+            if (commands[j] == IMG_COMMAND_DUMP) imgtool_dump_file(&bitmaps[i], input_path[i]);
+            if (commands[j] == IMG_COMMAND_FRAME_DUMP) imgtool_dump_data(bitmaps[i].pixels, bitmaps[i].width, bitmaps[i].height, bitmaps[i].channels);
+            else imgtool_command(commands[j], &bitmaps[i]);
         }
     }
 
@@ -340,7 +340,12 @@ do {                                        \
     }                                       \
 } while(0)                              
 
-    char open_str[256] = "open ";
+    char open_str[256];
+#ifdef __APPLE__
+    strcpy(open_str, "open ");
+#else
+    strcpy(open_str, "xdg-open ");
+#endif
 
     if (output_to_gif) {
         gif_t* g = bmp_to_gif(bitmaps, input_count);
@@ -357,11 +362,11 @@ do {                                        \
     } else if (output_count) {
         if (input_count > 1) {
             for (unsigned int i = 0; i < input_count; i++) {
-                char* output_path_num = output_num_string(output_path, i);
+                char* output_path_num = imgtool_output_strnum(output_path, i);
                 bmp_write(output_path_num, &bitmaps[i]);
                 bmp_free(&bitmaps[i]);
             }
-            _open_at_exit(open_at_exit, open_str, output_num_string(output_path, 0));
+            _open_at_exit(open_at_exit, open_str, imgtool_output_strnum(output_path, 0));
         } else {
             bmp_write(output_path, bitmaps);
             bmp_free(bitmaps);
