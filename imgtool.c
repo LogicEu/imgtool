@@ -362,7 +362,7 @@ int main(int argc, char** argv)
         bitmaps = (bmp_t*)malloc(input_count * sizeof(bmp_t));
         int miss = 0;
         for (unsigned int i = 0; i < input_count; i++) {
-            if (input_count > 1) printf("imgtool is loading images... ( %d / %d ) '%s'\n", i + 1, input_count, input_path[i]);
+            if (input_count > 1) printf("imgtool is loading images... ( %d / %d )\t'%s'\n", i + 1, input_count, input_path[i]);
             bitmaps[i - miss] = bmp_load(input_path[i]);
             if (bitmaps[i - miss].pixels == NULL) miss++;
         }

@@ -11,17 +11,22 @@ static int jpeg_quality = 100;
 
 static char* img_parse_suffix(const char* path)
 {
-    unsigned int size = strlen(path);
-    if (strlen(path) < 5) {
-        printf("imgtool does not recognize file extension '%s'\n", path);
+    int size = strlen(path), found = -1;
+    for (int i = 0; i < size; i++) {
+        if (path[i] == '.') {
+            found = i;
+            break;
+        }
+    }
+    
+    if (found == -1) {
+        printf("imgtool needs a file extension for '%s'\n", path);
         return NULL;
     }
 
-    char* suffix = (char*)malloc(5);
-    for (int i = 0; i < 4; i++) {
-        suffix[i] = path[size - 4 + i];
-    }
-    suffix[4] = '\0';
+    unsigned int suffix_size = size - found;
+    char* suffix = (char*)malloc(suffix_size + 1);
+    strcpy(suffix, &path[found]);
     return suffix;
 }
 
