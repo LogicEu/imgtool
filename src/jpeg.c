@@ -20,7 +20,7 @@ void jpeg_file_write(const char* path, uint8_t* data, unsigned int width, unsign
 
     FILE* file = fopen(path, "wb");
     if (!file) {
-        printf("Could not write '%s' file\n", path);
+        printf("imgtool could not write JPEG file '%s'\n", path);
         return;
     }
 
@@ -44,13 +44,11 @@ void jpeg_file_write(const char* path, uint8_t* data, unsigned int width, unsign
 
     fclose(file);
     jpeg_destroy_compress(&cinfo);
-    printf("Succesfully writed JPG file '%s'\n", path);
+    printf("succesfully writed JPG file '%s'\n", path);
 }
 
 uint8_t* jpeg_file_load(const char* path, unsigned int* w, unsigned int* h)
-{    
-    printf("Decompressing JPEG file.\n");
-
+{
 	struct stat file_info;
 	struct jpeg_decompress_struct cinfo;
 	struct jpeg_error_mgr jerr;
@@ -61,7 +59,7 @@ uint8_t* jpeg_file_load(const char* path, unsigned int* w, unsigned int* h)
 
     int rc = stat(path, &file_info);
     if (rc) {
-        printf("Could not stat resource '%s'\n", path);
+        printf("imgtool could not get info about JPEG file '%s'\n", path);
         return NULL;
     }
 
@@ -70,7 +68,7 @@ uint8_t* jpeg_file_load(const char* path, unsigned int* w, unsigned int* h)
 
 	FILE* file = fopen(path, "rb");
     if (!file) {
-        printf("Could not read file '%s'\n", path);
+        printf("imgtool could not open JPEG file '%s'\n", path);
         return NULL;
     } 
 
@@ -83,7 +81,7 @@ uint8_t* jpeg_file_load(const char* path, unsigned int* w, unsigned int* h)
 	rc = jpeg_read_header(&cinfo, TRUE);
 
 	if (rc != 1) {
-		printf("File does not seem to be a normal JPEG\n");
+		printf("file '%s' does not seem to be a normal JPEG.\n", path);
 		return NULL;
 	}
 
@@ -104,12 +102,10 @@ uint8_t* jpeg_file_load(const char* path, unsigned int* w, unsigned int* h)
 	}
 	jpeg_finish_decompress(&cinfo);
 	jpeg_destroy_decompress(&cinfo);
-
 	free(jpg_buffer);
+
     *w = width;
     *h = height;
-
-    printf("Succesfully loaded JPEG file.\n");
     return bmp_buffer;
 }
 
@@ -149,7 +145,6 @@ uint8_t* jpeg_compress(uint8_t* data, unsigned int* size, unsigned int width, un
 
 uint8_t* jpeg_decompress(uint8_t* data, unsigned int size)
 {
-    printf("Decompressing JPEG buffer.\n");
 	struct jpeg_decompress_struct cinfo;
 	struct jpeg_error_mgr jerr;
 
@@ -163,7 +158,7 @@ uint8_t* jpeg_decompress(uint8_t* data, unsigned int size)
 	int rc = jpeg_read_header(&cinfo, TRUE);
 
 	if (rc != 1) {
-		printf("Buffer does not seem to be a normal JPEG\n");
+		printf("image data buffer does not seem to be a normal JPEG\n");
 		return NULL;
 	}
 
@@ -184,7 +179,5 @@ uint8_t* jpeg_decompress(uint8_t* data, unsigned int size)
 	}
 	jpeg_finish_decompress(&cinfo);
 	jpeg_destroy_decompress(&cinfo);
-
-    printf("Succesfully decompressed JPEG buffer.\n");
     return bmp_buffer;
 }

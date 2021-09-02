@@ -11,7 +11,7 @@ uint8_t* png_file_load(const char* path, unsigned int* width, unsigned int* heig
 {
     FILE *file = fopen(path, "rb");
     if (!file) {
-        printf("Cannot open file '%s'\n", path);
+        printf("imgtool could not open PNG file '%s'\n", path);
         return NULL;
     }
     
@@ -19,12 +19,12 @@ uint8_t* png_file_load(const char* path, unsigned int* width, unsigned int* heig
     png_byte color_type;
     png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png) {
-        printf("There was a problem reading PNG file '%s'\n", path);
+        printf("imgtool had a problem trying to read PNG file '%s'\n", path);
         return NULL;
     }
     png_infop info = png_create_info_struct(png);
     if (!info || setjmp(png_jmpbuf(png))) {
-        printf("There was a problem with the information of PNG file '%s'\n", path);
+        printf("imgtool detected a problem reading the PNG file '%s'\n", path);
         return NULL;
     }
 
@@ -75,17 +75,17 @@ void png_file_write(const char* path, uint8_t* data, unsigned int width, unsigne
 {
     FILE* file = fopen(path, "wb");
     if (!file) {
-        printf("Cannot open file '%s'\n", path);
+        printf("imgtool could not write PNG file '%s'\n", path);
         return;
     }
     png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png) {
-        printf("There was a problem writing PNG file '%s'\n", path);
+        printf("imgtool had a problem writing PNG file '%s'\n", path);
         return;
     }
     png_infop info = png_create_info_struct(png);
     if (!info || setjmp(png_jmpbuf(png))) {
-        printf("There was a problem with the information of PNG file '%s'\n", path);
+        printf("imgtool detected a problem writing PNG file '%s'\n", path);
         return;
     }
 
@@ -129,5 +129,5 @@ void png_file_write(const char* path, uint8_t* data, unsigned int width, unsigne
     }
     free(row_pointers);
     fclose(file);
-    printf("Succesfully writed PNG file '%s'\n", path);
+    printf("succesfully writed PNG file '%s'\n", path);
 }

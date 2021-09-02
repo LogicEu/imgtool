@@ -89,7 +89,7 @@ gif_t* gif_file_load(const char* path)
 {
     gd_GIF* gif = gd_open_gif(path);
     if (!gif) {
-        printf("Could not open GIF file '%s'\n", path);
+        printf("imgtool could not open GIF file '%s'\n", path);
         return NULL;
     }
 
@@ -103,8 +103,6 @@ gif_t* gif_file_load(const char* path)
         gif_push_frame(ret, frame);
     }
     gd_close_gif(gif);
-
-    printf("Succesfully loaded GIF file '%s'\n", path);
     return ret;
 }
 
@@ -122,7 +120,7 @@ void gif_file_write(const char* path, gif_t* input)
     }
     ge_close_gif(gif);
 
-    printf("Succesfully writed GIF file '%s'\n", path);
+    printf("succesfully writed GIF file '%s'\n", path);
 }
 
 void gif_file_write_frame(const char* path, uint8_t* img, unsigned int width, unsigned int height)
@@ -137,19 +135,19 @@ void gif_file_write_frame(const char* path, uint8_t* img, unsigned int width, un
 
     ge_add_frame(gif, 10);
     ge_close_gif(gif);
-    printf("Succesfully writed GIF file '%s'\n", path);
+    printf("succesfully writed GIF file '%s'\n", path);
 }
 
 uint8_t* gif_file_load_frame(const char* path, unsigned int* width, unsigned int* height)
 {
     gd_GIF* gif = gd_open_gif(path);
     if (!gif) {
-        printf("Could not open GIF file '%s'\n", path);
+        printf("imgtool could not open GIF file '%s'\n", path);
         return NULL;
     }
 
     if (gd_get_frame(gif) == -1) {
-        printf("There was a problem loading GIF file '%s'\n", path);
+        printf("imgtool had a problem loading GIF file '%s'\n", path);
         return NULL;
     }
     
@@ -159,7 +157,7 @@ uint8_t* gif_file_load_frame(const char* path, unsigned int* width, unsigned int
     
     gd_render_frame(gif, frame);
     gd_close_gif(gif);
-    printf("Succesfully loaded GIF file '%s'\n", path);
+    printf("succesfully loaded GIF file '%s'\n", path);
     return frame;
 }
 
