@@ -119,7 +119,7 @@ uint8_t* jpeg_compress(uint8_t* data, unsigned int* size, unsigned int width, un
     cinfo.err = jpeg_std_error(&jerr);
     jpeg_create_compress(&cinfo);
 
-    size_t s;
+    unsigned long s;
     uint8_t* ret;
     jpeg_mem_dest(&cinfo, &ret, &s);
     *size = (unsigned int)s;

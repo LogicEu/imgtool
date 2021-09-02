@@ -369,7 +369,10 @@ int main(int argc, char** argv)
         input_count -= miss;
     }
 
-    if (bitmaps[0].pixels == NULL) return EXIT_FAILURE;
+    if (bitmaps[0].pixels == NULL) {
+        printf("imgtool could not load any image file\n");
+        return EXIT_FAILURE;
+    }
 
     /* apply commands & operations */
 

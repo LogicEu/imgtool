@@ -309,12 +309,13 @@ static int interlaced_line_index(int h, int y)
 static int read_image_data(gd_GIF *gif, int interlace)
 {
     uint8_t sub_len, shift, byte;
-    int init_key_size, key_size, table_is_full;
+    int init_key_size, key_size, table_is_full = 0;
     int frm_off, frm_size, str_len, i, p, x, y;
     uint16_t key, clear, stop;
     int ret;
     Table *table;
     Entry entry;
+    entry.suffix = str_len = 0;
     off_t start, end;
 
     read(gif->fd, &byte, 1);
