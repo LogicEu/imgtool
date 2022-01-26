@@ -104,7 +104,7 @@ uint8_t* rgba_to_rgb(uint8_t* buffer, unsigned int width, unsigned int height);
 
 uint8_t* px_at(bmp_t* bitmap, unsigned int x, unsigned int y);
 bmp_t bmp_new(unsigned int width, unsigned int height, unsigned int channels);
-bmp_t bmp_color(unsigned int width, unsigned int height, unsigned int channels, uint8_t* color);
+bmp_t bmp_color(unsigned int width, unsigned int height, unsigned int channels, const uint8_t* color);
 bmp_t bmp_load(const char* path);
 void bmp_write(const char* path, bmp_t* bitmap);
 void bmp_free(bmp_t* bitmap);

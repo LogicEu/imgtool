@@ -33,7 +33,7 @@ bmp_t bmp_copy(bmp_t* bmp)
     return ret;
 }
 
-bmp_t bmp_color(unsigned int width, unsigned int height, unsigned int channels, uint8_t* color)
+bmp_t bmp_color(unsigned int width, unsigned int height, unsigned int channels, const uint8_t* restrict color)
 {
     bmp_t bitmap = bmp_new(width, height, channels);
     for (unsigned int y = 0; y < height; y ++) {
