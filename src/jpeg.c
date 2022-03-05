@@ -8,7 +8,7 @@
  -> JPEG save and load <- 
 ************************/
 
-void jpeg_file_write(const char* path, uint8_t* data, unsigned int width, unsigned int height, int quality) 
+void jpeg_file_write(const char* restrict path, const uint8_t* restrict data, const unsigned int width, const unsigned int height, const int quality) 
 {
     struct jpeg_compress_struct cinfo;
     struct jpeg_error_mgr jerr;
@@ -37,7 +37,7 @@ void jpeg_file_write(const char* path, uint8_t* data, unsigned int width, unsign
 
     int row_stride = width * 3;
     while (cinfo.next_scanline < cinfo.image_height) {
-        row_pointer[0] = &data[cinfo.next_scanline * row_stride];
+        row_pointer[0] = (uint8_t*)(size_t)(data + cinfo.next_scanline * row_stride);
         jpeg_write_scanlines(&cinfo, row_pointer, 1);
     }
     jpeg_finish_compress(&cinfo);
@@ -47,7 +47,7 @@ void jpeg_file_write(const char* path, uint8_t* data, unsigned int width, unsign
     printf("succesfully writed JPG file '%s'\n", path);
 }
 
-uint8_t* jpeg_file_load(const char* path, unsigned int* w, unsigned int* h)
+uint8_t* jpeg_file_load(const char* restrict path, unsigned int* w, unsigned int* h)
 {
 	struct stat file_info;
 	struct jpeg_decompress_struct cinfo;
@@ -109,7 +109,7 @@ uint8_t* jpeg_file_load(const char* path, unsigned int* w, unsigned int* h)
     return bmp_buffer;
 }
 
-uint8_t* jpeg_compress(uint8_t* data, unsigned int* size, unsigned int width, unsigned height, int quality)
+uint8_t* jpeg_compress(const uint8_t* restrict data, unsigned int* size, const unsigned int width, const unsigned height, const int quality)
 {
     struct jpeg_compress_struct cinfo;
     struct jpeg_error_mgr jerr;
@@ -135,7 +135,7 @@ uint8_t* jpeg_compress(uint8_t* data, unsigned int* size, unsigned int width, un
 
     int row_stride = width * 3;
     while (cinfo.next_scanline < cinfo.image_height) {
-        row_pointer[0] = &data[cinfo.next_scanline * row_stride];
+        row_pointer[0] = (uint8_t*)(size_t)data + cinfo.next_scanline * row_stride;
         jpeg_write_scanlines(&cinfo, row_pointer, 1);
     }
     jpeg_finish_compress(&cinfo);
@@ -143,7 +143,7 @@ uint8_t* jpeg_compress(uint8_t* data, unsigned int* size, unsigned int width, un
     return ret;   
 }
 
-uint8_t* jpeg_decompress(uint8_t* data, unsigned int size)
+uint8_t* jpeg_decompress(const uint8_t* restrict data, const unsigned int size)
 {
 	struct jpeg_decompress_struct cinfo;
 	struct jpeg_error_mgr jerr;

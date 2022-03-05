@@ -47,34 +47,34 @@ typedef struct {
 ***********************/
 
 uint8_t* img_file_load(const char* path, unsigned int* width, unsigned int* height, unsigned int* out_channels);
-void img_file_write(const char* path, uint8_t* img, unsigned int width, unsigned int height, unsigned int in_channels);
+void img_file_write(const char* path, const uint8_t* img, const unsigned int width, const unsigned int height, const unsigned int in_channels);
 
-void img_set_jpeg_quality(int quality);
-uint8_t* img_jcompress(uint8_t* img, unsigned int width, unsigned int height, unsigned int channels, unsigned int quality);
-uint8_t* img_transform_buffer(uint8_t* buffer, unsigned int width, unsigned int height, unsigned int src, unsigned int dest);
+void img_set_jpeg_quality(const int quality);
+uint8_t* img_jcompress(const uint8_t* img, const unsigned int width, const unsigned int height, const unsigned int channels, const unsigned int quality);
+uint8_t* img_transform_buffer(const uint8_t* buffer, const unsigned int width, const unsigned int height, const unsigned int src, const unsigned int dest);
 
 /***********************
  -> PNG save and load <- 
 ***********************/
 
 uint8_t* png_file_load(const char* path, unsigned int* width, unsigned int* height);
-void png_file_write(const char* path, uint8_t* data, unsigned int width, unsigned int height);
+void png_file_write(const char* path, const uint8_t* data, const unsigned int width, const unsigned int height);
 
 /************************
  -> JPEG save and load <- 
 ************************/
 
 uint8_t* jpeg_file_load(const char* path, unsigned int* w, unsigned int* h);
-void jpeg_file_write(const char* path, uint8_t* data, unsigned int width, unsigned int height, int quality);
-uint8_t* jpeg_compress(uint8_t* data, unsigned int* size, unsigned int width, unsigned height, int quality);
-uint8_t* jpeg_decompress(uint8_t* data, unsigned int size);
+void jpeg_file_write(const char* path, const uint8_t* data, const unsigned int width, const unsigned int height, const int quality);
+uint8_t* jpeg_compress(const uint8_t* data, unsigned int* size, const unsigned int width, const unsigned height, const int quality);
+uint8_t* jpeg_decompress(const uint8_t* data, const unsigned int size);
 
 /************************
  -> PPM save and load  <- 
 ************************/
 
 uint8_t* ppm_file_load(const char* path, unsigned int* width, unsigned int* height);
-void ppm_file_write(const char* path, uint8_t* img, unsigned int width, unsigned int height);
+void ppm_file_write(const char* path, const uint8_t* img, const unsigned int width, const unsigned int height);
 
 /*************************
  -> GIF save and load  <- 
@@ -83,54 +83,54 @@ void ppm_file_write(const char* path, uint8_t* img, unsigned int width, unsigned
 gif_t* gif_file_load(const char* path);
 uint8_t* gif_file_load_frame(const char* path, unsigned int* width, unsigned int* height);
 void gif_free(gif_t* gif);
-void gif_file_write(const char* path, gif_t* input);
-void gif_file_write_frame(const char* path, uint8_t* img, unsigned int width, unsigned int height);
+void gif_file_write(const char* path, const gif_t* input);
+void gif_file_write_frame(const char* path, const uint8_t* img, const unsigned int width, const unsigned int height);
 
-bmp_t* gif_to_bmp(gif_t* gif, unsigned int* count);
-gif_t* bmp_to_gif(bmp_t* bitmaps, unsigned int count);
+bmp_t* gif_to_bmp(const gif_t* gif, unsigned int* count);
+gif_t* bmp_to_gif(const bmp_t* bitmaps, const unsigned int count);
 
 /*****************************
  -> Greyscale, RGB and RGBA <-
  ****************************/
 
-uint8_t* rgba_to_greyscale(uint8_t* buffer, unsigned int width, unsigned int height);
-uint8_t* rgb_to_greyscale(uint8_t* buffer, unsigned int width, unsigned int height);
-uint8_t* rgb_to_rgba(uint8_t* buffer, unsigned int width, unsigned int height);
-uint8_t* rgba_to_rgb(uint8_t* buffer, unsigned int width, unsigned int height);
+uint8_t* rgba_to_greyscale(const uint8_t* buffer, const unsigned int width, const unsigned int height);
+uint8_t* rgb_to_greyscale(const uint8_t* buffer, const unsigned int width, const unsigned int height);
+uint8_t* rgb_to_rgba(const uint8_t* buffer, const unsigned int width, const unsigned int height);
+uint8_t* rgba_to_rgb(const uint8_t* buffer, const unsigned int width, const unsigned int height);
 
 /***************************
  -> Bitmap Data Structure <-
  **************************/
 
-uint8_t* px_at(bmp_t* bitmap, unsigned int x, unsigned int y);
-bmp_t bmp_new(unsigned int width, unsigned int height, unsigned int channels);
-bmp_t bmp_color(unsigned int width, unsigned int height, unsigned int channels, const uint8_t* color);
+uint8_t* px_at(const bmp_t* bitmap, const unsigned int x, const unsigned int y);
+bmp_t bmp_new(const unsigned int width, const unsigned int height, const unsigned int channels);
+bmp_t bmp_color(const unsigned int width, const unsigned int height, const unsigned int channels, const uint8_t* color);
 bmp_t bmp_load(const char* path);
-void bmp_write(const char* path, bmp_t* bitmap);
+void bmp_write(const char* path, const bmp_t* bitmap);
+bmp_t bmp_copy(const bmp_t* bmp);
 void bmp_free(bmp_t* bitmap);
-bmp_t bmp_copy(bmp_t* bmp);
 
 /**************************************
  -> Bitmap algorithms and operations <-
  *************************************/
 
-bmp_t bmp_negative(bmp_t* bitmap);
-bmp_t bmp_flip_vertical(bmp_t* bitmap);
-bmp_t bmp_flip_horizontal(bmp_t* bitmap);
-bmp_t bmp_black_and_white(bmp_t* bitmap);
-bmp_t bmp_greyscale(bmp_t* bitmap);
-bmp_t bmp_rotate(bmp_t* bitmap);
-bmp_t bmp_scale(bmp_t* bitmap);
-bmp_t bmp_white_to_transparent(bmp_t* bitmap);
-bmp_t bmp_cut(bmp_t* bitmap);
-bmp_t bmp_reduce(bmp_t* bitmap);
-bmp_t bmp_clear_to_transparent(bmp_t* bitmap, uint8_t sensibility);
-bmp_t bmp_transform(bmp_t* bitmap, unsigned int channels);
-bmp_t bmp_jcompress(bmp_t* bitmap, unsigned int quality);
+bmp_t bmp_negative(const bmp_t* bitmap);
+bmp_t bmp_flip_vertical(const bmp_t* bitmap);
+bmp_t bmp_flip_horizontal(const bmp_t* bitmap);
+bmp_t bmp_black_and_white(const bmp_t* bitmap);
+bmp_t bmp_greyscale(const bmp_t* bitmap);
+bmp_t bmp_rotate(const bmp_t* bitmap);
+bmp_t bmp_scale(const bmp_t* bitmap);
+bmp_t bmp_white_to_transparent(const bmp_t* bitmap);
+bmp_t bmp_cut(const bmp_t* bitmap);
+bmp_t bmp_reduce(const bmp_t* bitmap);
+bmp_t bmp_clear_to_transparent(const bmp_t* bitmap, const uint8_t sensibility);
+bmp_t bmp_transform(const bmp_t* bitmap, const unsigned int channels);
+bmp_t bmp_jcompress(const bmp_t* bitmap, const unsigned int quality);
 
-bmp_t bmp_resize_width(bmp_t* bmp, unsigned int target_width);
-bmp_t bmp_resize_height(bmp_t* bmp, unsigned int target_height);
-bmp_t bmp_scale_lerp(bmp_t* bmp, float f);
+bmp_t bmp_resize_width(const bmp_t* bmp, const unsigned int target_width);
+bmp_t bmp_resize_height(const bmp_t* bmp, const unsigned int target_height);
+bmp_t bmp_scale_lerp(const bmp_t* bmp, const float f);
 
 #ifdef __cplusplus
 }

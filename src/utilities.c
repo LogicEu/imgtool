@@ -6,7 +6,7 @@
  -> Greyscale, RGB and RGBA <-
  ****************************/
 
-uint8_t* rgba_to_greyscale(uint8_t* buffer, unsigned int width, unsigned int height)
+uint8_t* rgba_to_greyscale(const uint8_t* restrict buffer, const unsigned int width, const unsigned int height)
 {
     printf("converting from RGBA to greyscale color format\n");
     uint8_t* ret = (uint8_t*)malloc(width * height);
@@ -22,7 +22,7 @@ uint8_t* rgba_to_greyscale(uint8_t* buffer, unsigned int width, unsigned int hei
     return ret;
 }
 
-uint8_t* rgb_to_greyscale(uint8_t* buffer, unsigned int width, unsigned int height)
+uint8_t* rgb_to_greyscale(const uint8_t* restrict buffer, const unsigned int width, const unsigned int height)
 {
     printf("converting from RGB to greyscale color format\n");
     uint8_t* ret = (uint8_t*)malloc(width * height);
@@ -38,7 +38,7 @@ uint8_t* rgb_to_greyscale(uint8_t* buffer, unsigned int width, unsigned int heig
     return ret;
 }
 
-uint8_t* rgb_to_rgba(uint8_t* buffer, unsigned int width, unsigned int height)
+uint8_t* rgb_to_rgba(const uint8_t* restrict buffer, const unsigned int width, const unsigned int height)
 {
     printf("converting from RGB to RGBA color format\n");
     uint8_t* ret = (uint8_t*)malloc(width * height * 4);
@@ -53,7 +53,7 @@ uint8_t* rgb_to_rgba(uint8_t* buffer, unsigned int width, unsigned int height)
     return ret;
 }
 
-uint8_t* rgba_to_rgb(uint8_t* buffer, unsigned int width, unsigned int height)
+uint8_t* rgba_to_rgb(const uint8_t* restrict buffer, const unsigned int width, const unsigned int height)
 {
     printf("converting from RGBA to RGB color format\n");
     uint8_t* ret = (uint8_t*)malloc(width * height * 3);

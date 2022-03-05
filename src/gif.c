@@ -15,7 +15,7 @@
 
 extern uint8_t vga[0x30];
 
-static uint8_t rgb_palette_256(uint8_t* rgb)
+static uint8_t rgb_palette_256(const uint8_t* restrict rgb)
 {
     int dif[256], i = 0;
     for (int j = 0; j < 16; j++) {
@@ -55,16 +55,16 @@ static uint8_t rgb_palette_256(uint8_t* rgb)
     return mark;
 }
 
-static gif_t* gif_new(unsigned int width, unsigned int height, uint8_t* background)
+static gif_t* gif_new(const unsigned int width, const unsigned int height, const uint8_t* restrict background)
 {
-    gif_t* gif = (gif_t*)malloc(sizeof(gif_t));
+    gif_t* gif = malloc(sizeof(gif_t));
     gif->width = width;
     gif->height = height;
     memcpy(gif->background, background, 3);
     
     gif->used = 0;
     gif->size = 1;
-    gif->frames = (uint8_t**)malloc(gif->size * sizeof(uint8_t*));
+    gif->frames = malloc(gif->size * sizeof(uint8_t*));
     return gif;
 }
 
@@ -72,7 +72,7 @@ static void gif_push_frame(gif_t* gif, uint8_t* frame)
 {
     if (gif->used >= gif->size) {
         gif->size *= 2;
-        gif->frames = (uint8_t**)realloc(gif->frames, gif->size * sizeof(uint8_t*));
+        gif->frames = realloc(gif->frames, gif->size * sizeof(uint8_t*));
     }
     gif->frames[gif->used++] = frame;
 }
@@ -85,7 +85,7 @@ void gif_free(gif_t* gif)
     free(gif->frames);
 }
 
-gif_t* gif_file_load(const char* path)
+gif_t* gif_file_load(const char* restrict path)
 {
     gd_GIF* gif = gd_open_gif(path);
     if (!gif) {
@@ -106,7 +106,7 @@ gif_t* gif_file_load(const char* path)
     return ret;
 }
 
-void gif_file_write(const char* path, gif_t* input)
+void gif_file_write(const char* restrict path, const gif_t* restrict input)
 {
     ge_GIF *gif = ge_new_gif(path, input->width, input->height, NULL, 8, 0);
 
@@ -123,7 +123,7 @@ void gif_file_write(const char* path, gif_t* input)
     printf("succesfully writed GIF file '%s'\n", path);
 }
 
-void gif_file_write_frame(const char* path, uint8_t* img, unsigned int width, unsigned int height)
+void gif_file_write_frame(const char* restrict path, const uint8_t* restrict img, const unsigned int width, const unsigned int height)
 {
     ge_GIF *gif = ge_new_gif(path, width, height, NULL, 8, 0);
 
@@ -138,7 +138,7 @@ void gif_file_write_frame(const char* path, uint8_t* img, unsigned int width, un
     printf("succesfully writed GIF file '%s'\n", path);
 }
 
-uint8_t* gif_file_load_frame(const char* path, unsigned int* width, unsigned int* height)
+uint8_t* gif_file_load_frame(const char* restrict path, unsigned int* width, unsigned int* height)
 {
     gd_GIF* gif = gd_open_gif(path);
     if (!gif) {
@@ -161,25 +161,27 @@ uint8_t* gif_file_load_frame(const char* path, unsigned int* width, unsigned int
     return frame;
 }
 
-bmp_t* gif_to_bmp(gif_t* gif, unsigned int* count)
+bmp_t* gif_to_bmp(const gif_t* restrict gif, unsigned int* count)
 {
-    bmp_t* ret = (bmp_t*)malloc(gif->used * sizeof(bmp_t));
-    unsigned int width = gif->width, height = gif->height, channels = 3;
-    for (unsigned int i = 0; i < gif->used; i++) {
+    const unsigned int size = gif->used;
+    bmp_t* ret = malloc(size * sizeof(bmp_t));
+    const unsigned int width = gif->width, height = gif->height, channels = 3;
+    for (unsigned int i = 0; i < size; i++) {
         ret[i].width = width;
         ret[i].height = height;
         ret[i].channels = channels;
         ret[i].pixels = (uint8_t*)malloc(width * height * channels);
         memcpy(ret[i].pixels, gif->frames[i], width * height * channels);
     }
-    *count = gif->used;
+    *count = size;
     return ret;
 }
 
-gif_t* bmp_to_gif(bmp_t* bitmaps, unsigned int count)
+gif_t* bmp_to_gif(const bmp_t* restrict bitmaps, const unsigned int count)
 {
     const unsigned int channels = bitmaps->channels;
-    uint8_t white[3] = {255, 255, 255};
+    const static uint8_t white[3] = {255};
+
     gif_t* gif = gif_new(bitmaps->width, bitmaps->height, &white[0]);
     for (unsigned int i = 0; i < count; i++) {
         if (channels == 4) {

@@ -7,7 +7,7 @@
  -> PNG save and load <- 
 ***********************/
 
-uint8_t* png_file_load(const char* path, unsigned int* width, unsigned int* height)
+uint8_t* png_file_load(const char* restrict path, unsigned int* width, unsigned int* height)
 {
     FILE *file = fopen(path, "rb");
     if (!file) {
@@ -71,7 +71,7 @@ uint8_t* png_file_load(const char* path, unsigned int* width, unsigned int* heig
     return data;
 }
 
-void png_file_write(const char* path, uint8_t* data, unsigned int width, unsigned int height) 
+void png_file_write(const char* restrict path, const uint8_t* restrict data, const unsigned int width, const unsigned int height) 
 {
     FILE* file = fopen(path, "wb");
     if (!file) {

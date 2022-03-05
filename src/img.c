@@ -9,7 +9,7 @@
 
 static int jpeg_quality = 100;
 
-static char* img_parse_suffix(const char* path)
+static char* img_parse_suffix(const char* restrict path)
 {
     int size = strlen(path), found = -1;
     for (int i = 0; i < size; i++) {
@@ -30,14 +30,14 @@ static char* img_parse_suffix(const char* path)
     return suffix;
 }
 
-static img_channel_enum img_parse_channels(img_format_enum format)
+static img_channel_enum img_parse_channels(const img_format_enum format)
 {
     if (!format) return IMG_NULL;
     if (format == IMG_FORMAT_PNG) return IMG_RGBA;
     return IMG_RGB;
 }
 
-static img_format_enum img_parse_format(const char* suffix)
+static img_format_enum img_parse_format(const char* restrict suffix)
 {
     if (!strcmp(suffix, ".jpg") || 
         !strcmp(suffix, "jpeg") ||
@@ -60,7 +60,7 @@ static img_format_enum img_parse_format(const char* suffix)
     return IMG_FORMAT_NULL;
 }
 
-static uint8_t* img_file_load_any(const char* path, unsigned int* width, unsigned int* height, img_format_enum format)
+static uint8_t* img_file_load_any(const char* restrict path, unsigned int* width, unsigned int* height, const img_format_enum format)
 {
     if (format == IMG_FORMAT_PNG) {
         return png_file_load(path, width, height);
@@ -74,7 +74,7 @@ static uint8_t* img_file_load_any(const char* path, unsigned int* width, unsigne
     return NULL;
 }
 
-static void img_file_write_any(const char* path, uint8_t* img, unsigned int width, unsigned int height, img_format_enum format)
+static void img_file_write_any(const char* restrict path, const uint8_t* restrict img, const unsigned int width, const unsigned int height, const img_format_enum format)
 {
     if (format == IMG_FORMAT_PNG) {
         png_file_write(path, img, width, height);
@@ -87,7 +87,7 @@ static void img_file_write_any(const char* path, uint8_t* img, unsigned int widt
     } else printf("imgtool cannot write specified file extension.\n");
 }
 
-uint8_t* img_transform_buffer(uint8_t* buffer, unsigned int width, unsigned int height, unsigned int src, unsigned int dest)
+uint8_t* img_transform_buffer(const uint8_t* restrict buffer, const unsigned int width, const unsigned int height, const unsigned int src, const unsigned int dest)
 {
     uint8_t* ret = NULL;
     if (src == IMG_RGB && dest == IMG_RGBA) {
@@ -102,7 +102,7 @@ uint8_t* img_transform_buffer(uint8_t* buffer, unsigned int width, unsigned int 
     return ret;
 }
 
-uint8_t* img_file_load(const char* path, unsigned int* width, unsigned int* height, unsigned int* out_channels)
+uint8_t* img_file_load(const char* restrict path, unsigned int* width, unsigned int* height, unsigned int* out_channels)
 {
     char* suffix = img_parse_suffix(path);
     if (!suffix) return NULL;
@@ -119,7 +119,7 @@ uint8_t* img_file_load(const char* path, unsigned int* width, unsigned int* heig
     return img_file_load_any(path, width, height, format);
 }
 
-void img_file_write(const char* path, uint8_t* img, unsigned int width, unsigned int height, unsigned int in_channels)
+void img_file_write(const char* restrict path, const uint8_t* restrict img, const unsigned int width, const unsigned int height, const unsigned int in_channels)
 {
     char* suffix = img_parse_suffix(path);
     if (!suffix) return;
@@ -144,7 +144,7 @@ void img_file_write(const char* path, uint8_t* img, unsigned int width, unsigned
     } else img_file_write_any(path, img, width, height, format);
 }
 
-uint8_t* img_jcompress(uint8_t* img, unsigned int width, unsigned int height, unsigned int channels, unsigned int quality)
+uint8_t* img_jcompress(const uint8_t* restrict img, const unsigned int width, const unsigned int height, unsigned int channels, unsigned int quality)
 {
     uint8_t* buffer;
     if (channels != IMG_RGB) {
@@ -153,7 +153,7 @@ uint8_t* img_jcompress(uint8_t* img, unsigned int width, unsigned int height, un
             printf("imgtool could not transform image\n");
             return NULL;
         }
-    } else buffer = img;
+    } else buffer = (uint8_t*)(size_t)img;
 
     unsigned int size;
     uint8_t* compress = jpeg_compress(buffer, &size, width, height, quality);
@@ -164,7 +164,7 @@ uint8_t* img_jcompress(uint8_t* img, unsigned int width, unsigned int height, un
     return decompress;
 }
 
-void img_set_jpeg_quality(int quality)
+void img_set_jpeg_quality(const int quality)
 {
     jpeg_quality = quality;
 }

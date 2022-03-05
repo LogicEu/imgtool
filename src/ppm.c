@@ -6,7 +6,7 @@
  -> PPM save and load  <- 
 ************************/
 
-uint8_t* ppm_file_load(const char* path, unsigned int* width, unsigned int* height)
+uint8_t* ppm_file_load(const char* restrict path, unsigned int* width, unsigned int* height)
 {
     FILE* file = fopen(path, "rb");
     if (!file) {
@@ -24,7 +24,7 @@ uint8_t* ppm_file_load(const char* path, unsigned int* width, unsigned int* heig
     return ret;
 }
 
-void ppm_file_write(const char* path, uint8_t* img, unsigned int width, unsigned int height)
+void ppm_file_write(const char* restrict path, const uint8_t* restrict img, const unsigned int width, const unsigned int height)
 {
     FILE* file = fopen(path, "wb");
     if (!file) {
