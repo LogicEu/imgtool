@@ -5,11 +5,11 @@
 extern "C" {
 #endif
 
-/*================================================
->>>>>>>>>>>>>>>  IMGTOOL HEADER   >>>>>>>>>>>>>>>>
+/*================================================  
+-------------------- IMGTOOL ---------------------
 C API to easily load, save and transform different
 image formats such as PNG, JPEG, PPM and GIF.
-====================================== @eulogic */
+============================== Eugenio Arteaga A*/
 
 #include <stdint.h>
 
