@@ -1,13 +1,5 @@
 # imgtool
 >
-> imgtool is a tool to easily handle image formats and transformations.
+> Handle image formats and transformations easily.
+> Depends on libpng and libjpeg.
 >
-> Dependencies:
->        -lz
->        -lpng
->        -ljpeg
->
-```sh
-./build.sh -comp
-./imgtool
-```
