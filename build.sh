@@ -66,9 +66,17 @@ compile() {
     $cc *.c ${flags[*]} -I. -L. -l$name ${lib[*]} -o $name
 }
 
+cleanf() {
+    if [ -f $1 ]; then
+        rm $1 && echo "deleted '$1'"
+    fi
+}
+
 clean() {
-    rm $name
-    rm lib$name.a
+    cleanf $name
+    cleanf lib$name.a
+    cleanf lib$name.so
+    cleanf lib$name.dylib
 }
 
 install() {

@@ -179,8 +179,8 @@ bmp_t* gif_to_bmp(const gif_t* restrict gif, unsigned int* count)
 
 gif_t* bmp_to_gif(const bmp_t* restrict bitmaps, const unsigned int count)
 {
+    static const uint8_t white[3] = {255};
     const unsigned int channels = bitmaps->channels;
-    const static uint8_t white[3] = {255};
 
     gif_t* gif = gif_new(bitmaps->width, bitmaps->height, &white[0]);
     for (unsigned int i = 0; i < count; i++) {

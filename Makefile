@@ -34,8 +34,8 @@ $(NAME): $(LPATH) $(NAME).c
 shared: $(SRC)
 	$(CC) -o $(LIB) $(SRC) $(CFLAGS) $(LIBS) $(OSFLAGS)
 
-clean:
-	rm $(LPATH)
+clean: build.sh
+	./$^ -$@
 	
 install: $(NAME)
 	sudo mv $(NAME) /usr/local/bin/
