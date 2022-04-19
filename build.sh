@@ -26,50 +26,26 @@ lib=(
     -ljpeg
 )
 
-fail_op() {
-    echo "Use -dlib to build the library dynamically"
-    echo "Use -slib to build the library statically"
-    echo "Use -comp to compile the imgtool terminal tool"
-    echo "Use -install to install the imgtool in your system"
-    exit
-}
-
-fail_os() {
-    echo "OS is not supported yet..."
-    exit
-}
-
-mac_dlib() {
-    $cc ${flags[*]} ${inc[*]} ${lib[*]} -dynamiclib ${src[*]} -o lib$name.dylib &&\
-    install_name_tool -id @executable_path/lib$name.dylib lib$name.dylib 
-}
-
-linux_dlib() {
-    $cc -shared ${flags[*]} ${inc[*]} ${lib[*]} -fPIC ${src[*]} -o lib$name.so 
-}
-
 dlib() {
     if echo "$OSTYPE" | grep -q "darwin"; then
-        mac_dlib
+        $cc ${flags[*]} ${inc[*]} ${lib[*]} -dynamiclib ${src[*]} -o lib$name.dylib
     elif echo "$OSTYPE" | grep -q "linux"; then
-        linux_dlib
+        $cc -shared ${flags[*]} ${inc[*]} ${lib[*]} -fPIC ${src[*]} -o lib$name.so 
     else
-        fails_os
+        echo "OS is not supported yet..." && exit
     fi
 }
 
 slib() {
-    $cc ${flags[*]} ${inc[*]} -c ${src[*]} && ar -crv lib$name.a *.o && rm *.o
+    $cc ${flags[*]} ${inc[*]} -c ${src[*]} && ar -cr lib$name.a *.o && rm *.o
 }
 
 compile() {
-    $cc *.c ${flags[*]} -I. -L. -l$name ${lib[*]} -o $name
+    $cc $name.c ${flags[*]} ${inc[*]} -L. -l$name ${lib[*]} -o $name
 }
 
 cleanf() {
-    if [ -f $1 ]; then
-        rm $1 && echo "deleted '$1'"
-    fi
+    [ -f $1 ] && rm $1 && echo "deleted $1"
 }
 
 clean() {
@@ -77,23 +53,54 @@ clean() {
     cleanf lib$name.a
     cleanf lib$name.so
     cleanf lib$name.dylib
+    return 0
 }
 
 install() {
-    sudo cp $name /usr/local/bin/$name
+    [ "$EUID" -ne 0 ] && echo "Run with sudo to install" && exit
+
+    dlib && slib && compile
+
+    cp $name.h /usr/local/include
+
+    [ -f $name ] && mv $name /usr/local/bin
+    [ -f lib$name.a ] && mv lib$name.a /usr/local/lib/lib$name.a
+    [ -f lib$name.so ] && mv lib$name.so /usr/local/lib/lib$name.so
+    [ -f lib$name.dylib ] && mv lib$name.dylib /usr/local/lib/lib$name.dylib
+
+    echo "Successfully installed imgtool"
+    return 0
+}
+
+uninstall() {
+    [ "$EUID" -ne 0 ] && echo "Run with sudo to uninstall" && exit
+
+    cleanf /usr/local/bin/$name
+    cleanf /usr/local/include/$name.h
+    cleanf /usr/local/lib/lib$name.a
+    cleanf /usr/local/lib/lib$name.so
+    cleanf /usr/local/lib/lib$name.dylib
+
+    echo "Successfully uninstalled imgtool"
+    return 0
 }
 
 case "$1" in
-    "-dlib")
+    "shared")
         dlib;;
-    "-slib")
+    "static")
         slib;;
-    "-comp")
+    "comp")
         slib && compile;;
-    "-install")
-        slib && compile && install;;
-    "-clean")
+    "install")
+        install;;
+    "uninstall")
+        uninstall;;
+    "clean")
         clean;;
     *)
-        fail_op;;
+        echo "Use 'shared' or 'static' to build the library."
+        echo "Use 'comp' to compile the imgtool terminal tool."
+        echo "Use 'install' to install imgtool in /usr/local."
+        echo "Use 'clean' to remove local builds.";;
 esac

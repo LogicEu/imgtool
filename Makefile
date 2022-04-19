@@ -10,13 +10,13 @@ NAME=imgtool
 SRC=src/*.c src/gif/*.c
 
 CFLAGS=$(STD) $(WFLAGS) $(OPT) $(IDIR)
-OS=$(shell uname -s)
 
 LPATH=$(patsubst %,lib%.a,$(NAME))
 LFLAGS=-L.
 LFLAGS += $(patsubst %,-l%,$(NAME))
 LFLAGS += $(LIBS)
 
+OS=$(shell uname -s)
 ifeq ($(OS),Darwin)
 	OSFLAGS=-dynamiclib
 	LIB=lib$(NAME).dylib
@@ -26,7 +26,7 @@ else
 endif
 
 $(LPATH): $(SRC)
-	$(CC) $(CFLAGS) -c $^ && ar -crv $@ *.o && rm *.o
+	$(CC) $(CFLAGS) -c $^ && ar -cr $@ *.o && rm *.o
 
 $(NAME): $(LPATH) $(NAME).c
 	$(CC) -o $@ $(NAME).c $(CFLAGS) $(LFLAGS)
@@ -35,7 +35,11 @@ shared: $(SRC)
 	$(CC) -o $(LIB) $(SRC) $(CFLAGS) $(LIBS) $(OSFLAGS)
 
 clean: build.sh
-	./$^ -$@
-	
-install: $(NAME)
-	sudo mv $(NAME) /usr/local/bin/
+	./$^ $@
+
+install: build.sh
+	./$^ $@
+
+uninstall: build.sh
+	./$^ $@
+
