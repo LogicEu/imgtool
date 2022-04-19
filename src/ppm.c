@@ -10,7 +10,7 @@ uint8_t* ppm_file_load(const char* restrict path, unsigned int* width, unsigned 
 {
     FILE* file = fopen(path, "rb");
     if (!file) {
-        printf("imgtool could not open PPM file '%s'\n", path);
+        fprintf(stderr, "imgtool could not open PPM file '%s'\n", path);
         return NULL;
     }
 
@@ -21,6 +21,7 @@ uint8_t* ppm_file_load(const char* restrict path, unsigned int* width, unsigned 
     uint8_t* ret = (uint8_t*)malloc(*width * *height * 3);
     fread(ret, 3, *width * *height, file);
     fclose(file);
+    
     return ret;
 }
 
@@ -28,7 +29,7 @@ void ppm_file_write(const char* restrict path, const uint8_t* restrict img, cons
 {
     FILE* file = fopen(path, "wb");
     if (!file) {
-        printf("imgtool could not write PPM file '%s'\n", path);
+        fprintf(stderr, "imgtool could not write PPM file '%s'\n", path);
         return;
     }
 
@@ -36,6 +37,6 @@ void ppm_file_write(const char* restrict path, const uint8_t* restrict img, cons
     int rc = sprintf(buff, "P6 %d %d 255\n", width, height);
     fwrite(buff, rc, 1, file);
     fwrite(img, 3, width * height, file);
+    
     fclose(file);
-    printf("succesfully writed PPM file '%s'\n", path);
 }

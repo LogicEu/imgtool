@@ -20,7 +20,7 @@ void jpeg_file_write(const char* restrict path, const uint8_t* restrict data, co
 
     FILE* file = fopen(path, "wb");
     if (!file) {
-        printf("imgtool could not write JPEG file '%s'\n", path);
+        fprintf(stderr, "imgtool could not write JPEG file '%s'\n", path);
         return;
     }
 
@@ -44,7 +44,6 @@ void jpeg_file_write(const char* restrict path, const uint8_t* restrict data, co
 
     fclose(file);
     jpeg_destroy_compress(&cinfo);
-    printf("succesfully writed JPG file '%s'\n", path);
 }
 
 uint8_t* jpeg_file_load(const char* restrict path, unsigned int* w, unsigned int* h)
@@ -59,7 +58,7 @@ uint8_t* jpeg_file_load(const char* restrict path, unsigned int* w, unsigned int
 
     int rc = stat(path, &file_info);
     if (rc) {
-        printf("imgtool could not get info about JPEG file '%s'\n", path);
+        fprintf(stderr, "imgtool could not get info about JPEG file '%s'\n", path);
         return NULL;
     }
 
@@ -68,7 +67,7 @@ uint8_t* jpeg_file_load(const char* restrict path, unsigned int* w, unsigned int
 
 	FILE* file = fopen(path, "rb");
     if (!file) {
-        printf("imgtool could not open JPEG file '%s'\n", path);
+        fprintf(stderr, "imgtool could not open JPEG file '%s'\n", path);
         return NULL;
     } 
 
@@ -81,7 +80,7 @@ uint8_t* jpeg_file_load(const char* restrict path, unsigned int* w, unsigned int
 	rc = jpeg_read_header(&cinfo, TRUE);
 
 	if (rc != 1) {
-		printf("file '%s' does not seem to be a normal JPEG.\n", path);
+		fprintf(stderr, "file '%s' does not seem to be a normal JPEG.\n", path);
 		return NULL;
 	}
 
@@ -158,7 +157,7 @@ uint8_t* jpeg_decompress(const uint8_t* restrict data, const unsigned int size)
 	int rc = jpeg_read_header(&cinfo, TRUE);
 
 	if (rc != 1) {
-		printf("image data buffer does not seem to be a normal JPEG\n");
+		fprintf(stderr, "image data buffer does not seem to be a normal JPEG\n");
 		return NULL;
 	}
 

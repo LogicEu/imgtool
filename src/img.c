@@ -20,7 +20,7 @@ static char* img_parse_suffix(const char* restrict path)
     }
     
     if (found == -1) {
-        printf("imgtool needs a file extension for '%s'\n", path);
+        fprintf(stderr, "imgtool needs a file extension for '%s'\n", path);
         return NULL;
     }
 
@@ -84,7 +84,7 @@ static void img_file_write_any(const char* restrict path, const uint8_t* restric
         ppm_file_write(path, img, width, height);
     } else if (format == IMG_FORMAT_GIF) {
         gif_file_write_frame(path, img, width, height);
-    } else printf("imgtool cannot write specified file extension.\n");
+    } else fprintf(stderr, "imgtool cannot write specified file extension.\n");
 }
 
 uint8_t* img_transform_buffer(const uint8_t* restrict buffer, const unsigned int width, const unsigned int height, const unsigned int src, const unsigned int dest)
@@ -110,7 +110,7 @@ uint8_t* img_file_load(const char* restrict path, unsigned int* width, unsigned 
     img_format_enum format = img_parse_format(suffix);
     *out_channels = img_parse_channels(format);
     if (!format || !*out_channels) {
-        printf("imgtool does not recognize file extension '%s'\n", suffix);
+        fprintf(stderr, "imgtool does not recognize file extension '%s'\n", suffix);
         free(suffix);
         return NULL;
     }
@@ -127,7 +127,7 @@ void img_file_write(const char* restrict path, const uint8_t* restrict img, cons
     img_format_enum format = img_parse_format(suffix);
     img_channel_enum parse_channel = img_parse_channels(format);
     if (!format || !parse_channel) {
-        printf("imgtool does not recognize file extension '%s'\n", suffix);
+        fprintf(stderr, "imgtool does not recognize file extension '%s'\n", suffix);
         free(suffix);
         return;
     }
@@ -136,7 +136,7 @@ void img_file_write(const char* restrict path, const uint8_t* restrict img, cons
     if (in_channels != parse_channel) {
         uint8_t* buffer = img_transform_buffer(img, width, height, in_channels, parse_channel);
         if (!buffer) {
-            printf("imgtool could not transform file '%s'\n", path);
+            fprintf(stderr, "imgtool could not transform file '%s'\n", path);
             return;
         }
         img_file_write_any(path, buffer, width, height, format);
@@ -150,7 +150,7 @@ uint8_t* img_jcompress(const uint8_t* restrict img, const unsigned int width, co
     if (channels != IMG_RGB) {
         buffer = img_transform_buffer(img, width, height, channels, IMG_RGB);
         if (!buffer) {
-            printf("imgtool could not transform image\n");
+            fprintf(stderr, "imgtool could not transform image\n");
             return NULL;
         }
     } else buffer = (uint8_t*)(size_t)img;

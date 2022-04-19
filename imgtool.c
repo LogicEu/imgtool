@@ -140,7 +140,7 @@ static long imgtool_file_size(const char* path)
 {
     FILE* file = fopen(path, "rb");
     if (!file) {
-        printf("imgtool could not open file '%s'\n", path);
+        fprintf(stderr, "imgtool could not open file '%s'\n", path);
         return 0;
     }
     fseek(file, 0, SEEK_END);
@@ -151,17 +151,17 @@ static long imgtool_file_size(const char* path)
 
 static void imgtool_dump_data(unsigned char* img, unsigned int width, unsigned int height, unsigned int channels)
 {
-    printf("--------------------------------------------------\n");
-    printf("Width: %u, Height: %u, Channels: %u\n", width, height, channels);
+    fprintf(stdout, "--------------------------------------------------\n");
+    fprintf(stdout, "Width: %u, Height: %u, Channels: %u\n", width, height, channels);
     for (unsigned int y = 0; y < height; y++) {
         for (unsigned int x = 0; x < width; x++) {
-            printf("(%u", *(img + (width * y + x) * channels));
+            fprintf(stdout, "(%u", *(img + (width * y + x) * channels));
             for (unsigned int i = 1; i < channels; i++) {
-                printf(" %u ", *(img + (width * y + x) * channels + i));
+                fprintf(stdout, " %u ", *(img + (width * y + x) * channels + i));
             }
-            printf(") ");
+            fprintf(stdout, ") ");
         }
-        printf("\n");
+        fprintf(stdout, "\n");
     }
 }
 
@@ -169,52 +169,52 @@ static void imgtool_dump_file(bmp_t* bitmap, const char* path)
 {
     if (!strlen(path)) return;
     long size = imgtool_file_size(path);
-    printf("--------------------------------------------------\n");
-    printf("File:\t\t'%s'\n", path);
-    printf("Size:\t\t%ldKb\t\t (%ld bytes)\n", size >> 10, size);
-    printf("Width:\t\t%u px\n", bitmap->width);
-    printf("Height:\t\t%u px\n", bitmap->height);
-    printf("Channels:\t%u\n", bitmap->channels);
+    fprintf(stdout, "--------------------------------------------------\n");
+    fprintf(stdout, "File:\t\t'%s'\n", path);
+    fprintf(stdout, "Size:\t\t%ldKb\t\t (%ld bytes)\n", size >> 10, size);
+    fprintf(stdout, "Width:\t\t%u px\n", bitmap->width);
+    fprintf(stdout, "Height:\t\t%u px\n", bitmap->height);
+    fprintf(stdout, "Channels:\t%u\n", bitmap->channels);
 }
 
 static void imgtool_help()
 {
-    printf("\n**** IMGTOOL: COMMAND LINE HANDY IMAGE TOOL ****\n\n");
-    printf("Enter any number of image files and commands to execute.\n");
-    printf("Each command or operation is applied to input images secuentially.\n");
-    printf("Supported formats are PNG, JPG, GIF and PPM.\n");
-    printf("Here is a simple use case example:\n\n");
-    printf("$ imgtool input.png -o output.jpg\n\n");
-    printf("This creates a copy of the input PNG in a JPG image format.\n");
-    printf("Another useful example is:\n\n");
-    printf("$ imgtool *.png -I -s -bw\n\n");
-    printf("In this case we take all PNG files in the current directory and apply\n");
-    printf("a scale-down and a grey scale effect to the original input files.\n");
-    printf("The following are the commands and flags supported.\n\n");
+    fprintf(stdout, "\n**** IMGTOOL: COMMAND LINE HANDY IMAGE TOOL ****\n\n");
+    fprintf(stdout, "Enter any number of image files and commands to execute.\n");
+    fprintf(stdout, "Each command or operation is applied to input images secuentially.\n");
+    fprintf(stdout, "Supported formats are PNG, JPG, GIF and PPM.\n");
+    fprintf(stdout, "Here is a simple use case example:\n\n");
+    fprintf(stdout, "$ imgtool input.png -o output.jpg\n\n");
+    fprintf(stdout, "This creates a copy of the input PNG in a JPG image format.\n");
+    fprintf(stdout, "Another useful example is:\n\n");
+    fprintf(stdout, "$ imgtool *.png -I -s -bw\n\n");
+    fprintf(stdout, "In this case we take all PNG files in the current directory and apply\n");
+    fprintf(stdout, "a scale-down and a grey scale effect to the original input files.\n");
+    fprintf(stdout, "The following are the commands and flags supported.\n\n");
 
-    printf("-o:\t\tWrite the output image file to the path and format following this flag.\n");
-    printf("-I:\t\tWrite the output to the same file path and format as input.\n");
-    printf("-n\t\tNo output.\n");
-    printf("-d:\t\tDump main info about image file.\n");
-    printf("-D:\t\tDump image frame buffer as RGB/A values.\n");
-    printf("-j:\t\tCompress image using JPEG compression (lossy).\n");
-    printf("-bw:\t\tTransform to black and white.\n");
-    printf("-N:\t\tTransform to negative RGB values.\n");
-    printf("-cut:\t\tCut corners of the image when they are transparent.\n");
-    printf("-r:\t\tRotate by 90 degrees.\n");
-    printf("-S:\t\tScale up image by factor of two (nearest).\n");
-    printf("-s:\t\tScale down image by factor of two (linear).\n");
-    printf("-fh:\t\tFlip the image horizontally.\n");
-    printf("-fv\t\tFlip the image vertically.\n");
-    printf("-Rx:\t\tResize width of image to specified width.\n");
-    printf("-Ry:\t\tResize height of image to specified height.\n");
-    printf("-R:\t\tResize scale of image to specified floating point number.\n");
-    printf("-t\t\tSet white to transparent. Needs alpha channel present.\n");
-    printf("-T\t\tSet clear colors to transparent with a sensibility between 0 and 255.\n");
-    printf("-q:\t\tSet quality for JPEG compression output when writing to JPG.\n");
-    printf("-to-gif:\tWrite output images to a single output GIF file.\n");
-    printf("-from-gif:\tTake every frame of input GIF file as input images.\n");
-    printf("-open:\t\tOpen the first output image after process is completed.\n");
+    fprintf(stdout, "-o:\t\tWrite the output image file to the path and format following this flag.\n");
+    fprintf(stdout, "-I:\t\tWrite the output to the same file path and format as input.\n");
+    fprintf(stdout, "-n\t\tNo output.\n");
+    fprintf(stdout, "-d:\t\tDump main info about image file.\n");
+    fprintf(stdout, "-D:\t\tDump image frame buffer as RGB/A values.\n");
+    fprintf(stdout, "-j:\t\tCompress image using JPEG compression (lossy).\n");
+    fprintf(stdout, "-bw:\t\tTransform to black and white.\n");
+    fprintf(stdout, "-N:\t\tTransform to negative RGB values.\n");
+    fprintf(stdout, "-cut:\t\tCut corners of the image when they are transparent.\n");
+    fprintf(stdout, "-r:\t\tRotate by 90 degrees.\n");
+    fprintf(stdout, "-S:\t\tScale up image by factor of two (nearest).\n");
+    fprintf(stdout, "-s:\t\tScale down image by factor of two (linear).\n");
+    fprintf(stdout, "-fh:\t\tFlip the image horizontally.\n");
+    fprintf(stdout, "-fv\t\tFlip the image vertically.\n");
+    fprintf(stdout, "-Rx:\t\tResize width of image to specified width.\n");
+    fprintf(stdout, "-Ry:\t\tResize height of image to specified height.\n");
+    fprintf(stdout, "-R:\t\tResize scale of image to specified floating point number.\n");
+    fprintf(stdout, "-t\t\tSet white to transparent. Needs alpha channel present.\n");
+    fprintf(stdout, "-T\t\tSet clear colors to transparent with a sensibility between 0 and 255.\n");
+    fprintf(stdout, "-q:\t\tSet quality for JPEG compression output when writing to JPG.\n");
+    fprintf(stdout, "-to-gif:\tWrite output images to a single output GIF file.\n");
+    fprintf(stdout, "-from-gif:\tTake every frame of input GIF file as input images.\n");
+    fprintf(stdout, "-open:\t\tOpen the first output image after process is completed.\n");
 }
 
 int main(int argc, char** argv)
@@ -226,20 +226,20 @@ int main(int argc, char** argv)
     unsigned int output_to_input = 0, open_at_exit = 0, missing_output = 1;
 
     if (argc <= 1) {
-        printf("Missing arguments. Use -help to see instructions.\n");
+        fprintf(stderr, "Missing arguments. Use -help to see instructions.\n");
         return EXIT_FAILURE;
     }
 
     /* parse arguments -> input files and commands */
 
     for (int i = 1; i < argc; i++) {
-        if (!strcmp(argv[i], "-help")) {
+        if (!strcmp(argv[i], "-help") || !strcmp(argv[i], "-h")) {
             imgtool_help();
             return EXIT_SUCCESS;
         }
 
-        if (!strcmp(argv[i], "-version")) {
-            printf("imgtool version 0.0.1 Beta\n");
+        if (!strcmp(argv[i], "-version") || !strcmp(argv[i], "-v")) {
+            fprintf(stdout, "imgtool version 0.1.0\n");
             return EXIT_SUCCESS;
         } 
         
@@ -333,11 +333,11 @@ int main(int argc, char** argv)
     /* check if parsed arguments meet requirements */
     
     if (!input_count) {
-        printf("Missing input image file. See -help for more information.\n");
+        fprintf(stderr, "Missing input image file. See -help for more information.\n");
         return EXIT_FAILURE;
     }
     if (missing_output) {
-        printf("Missing output image file. See -help for more information.\n");
+        fprintf(stderr, "Missing output image file. See -help for more information.\n");
         return EXIT_FAILURE;
     }
     if (!command_count) {
@@ -345,7 +345,7 @@ int main(int argc, char** argv)
             imgtool_open_at_exit(open_at_exit, input_path[0]);
             return EXIT_SUCCESS;
         } else {
-            printf("Missing command to execute. See -help for more info.\n");
+            fprintf(stderr, "Missing command to execute. See -help for more info.\n");
             return EXIT_FAILURE;
         }
     }
@@ -362,7 +362,7 @@ int main(int argc, char** argv)
         bitmaps = (bmp_t*)malloc(input_count * sizeof(bmp_t));
         int miss = 0;
         for (unsigned int i = 0; i < input_count; i++) {
-            if (input_count > 1) printf("imgtool is loading images... ( %d / %d )\t'%s'\n", i + 1, input_count, input_path[i]);
+            if (input_count > 1) fprintf(stdout, "imgtool is loading images... ( %d / %d )\t'%s'\n", i + 1, input_count, input_path[i]);
             bitmaps[i - miss] = bmp_load(input_path[i]);
             if (bitmaps[i - miss].pixels == NULL) miss++;
         }
@@ -370,7 +370,7 @@ int main(int argc, char** argv)
     }
 
     if (bitmaps[0].pixels == NULL) {
-        printf("imgtool could not load any image file\n");
+        fprintf(stderr, "imgtool could not load any image file\n");
         return EXIT_FAILURE;
     }
 

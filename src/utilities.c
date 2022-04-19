@@ -8,7 +8,6 @@
 
 uint8_t* rgba_to_greyscale(const uint8_t* restrict buffer, const unsigned int width, const unsigned int height)
 {
-    printf("converting from RGBA to greyscale color format\n");
     uint8_t* ret = (uint8_t*)malloc(width * height);
     for (unsigned int y = 0; y < height; y++) {
         for (unsigned int x = 0; x < width; x++) {
@@ -24,7 +23,6 @@ uint8_t* rgba_to_greyscale(const uint8_t* restrict buffer, const unsigned int wi
 
 uint8_t* rgb_to_greyscale(const uint8_t* restrict buffer, const unsigned int width, const unsigned int height)
 {
-    printf("converting from RGB to greyscale color format\n");
     uint8_t* ret = (uint8_t*)malloc(width * height);
     for (unsigned int y = 0; y < height; y++) {
         for (unsigned int x = 0; x < width; x++) {
@@ -40,7 +38,6 @@ uint8_t* rgb_to_greyscale(const uint8_t* restrict buffer, const unsigned int wid
 
 uint8_t* rgb_to_rgba(const uint8_t* restrict buffer, const unsigned int width, const unsigned int height)
 {
-    printf("converting from RGB to RGBA color format\n");
     uint8_t* ret = (uint8_t*)malloc(width * height * 4);
     for (unsigned int y = 0; y < height; y++) {
         for (unsigned int x = 0; x < width; x++) {
@@ -55,7 +52,6 @@ uint8_t* rgb_to_rgba(const uint8_t* restrict buffer, const unsigned int width, c
 
 uint8_t* rgba_to_rgb(const uint8_t* restrict buffer, const unsigned int width, const unsigned int height)
 {
-    printf("converting from RGBA to RGB color format\n");
     uint8_t* ret = (uint8_t*)malloc(width * height * 3);
     for (unsigned int y = 0; y < height; y++) {
         for (unsigned int x = 0; x < width; x++) {

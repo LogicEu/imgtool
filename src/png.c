@@ -11,7 +11,7 @@ uint8_t* png_file_load(const char* restrict path, unsigned int* width, unsigned 
 {
     FILE *file = fopen(path, "rb");
     if (!file) {
-        printf("imgtool could not open PNG file '%s'\n", path);
+        fprintf(stderr, "imgtool could not open PNG file '%s'\n", path);
         return NULL;
     }
     
@@ -19,12 +19,12 @@ uint8_t* png_file_load(const char* restrict path, unsigned int* width, unsigned 
     png_byte color_type;
     png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png) {
-        printf("imgtool had a problem trying to read PNG file '%s'\n", path);
+        fprintf(stderr, "imgtool had a problem trying to read PNG file '%s'\n", path);
         return NULL;
     }
     png_infop info = png_create_info_struct(png);
     if (!info || setjmp(png_jmpbuf(png))) {
-        printf("imgtool detected a problem reading the PNG file '%s'\n", path);
+        fprintf(stderr, "imgtool detected a problem reading the PNG file '%s'\n", path);
         return NULL;
     }
 
@@ -65,9 +65,12 @@ uint8_t* png_file_load(const char* restrict path, unsigned int* width, unsigned 
         free(row_pointers[y]);
     }
     free(row_pointers);
+    
     fclose(file);
+    
     *width = w;
     *height = h;
+    
     return data;
 }
 
@@ -75,17 +78,17 @@ void png_file_write(const char* restrict path, const uint8_t* restrict data, con
 {
     FILE* file = fopen(path, "wb");
     if (!file) {
-        printf("imgtool could not write PNG file '%s'\n", path);
+        fprintf(stderr, "imgtool could not write PNG file '%s'\n", path);
         return;
     }
     png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png) {
-        printf("imgtool had a problem writing PNG file '%s'\n", path);
+        fprintf(stderr, "imgtool had a problem writing PNG file '%s'\n", path);
         return;
     }
     png_infop info = png_create_info_struct(png);
     if (!info || setjmp(png_jmpbuf(png))) {
-        printf("imgtool detected a problem writing PNG file '%s'\n", path);
+        fprintf(stderr, "imgtool detected a problem writing PNG file '%s'\n", path);
         return;
     }
 
@@ -128,6 +131,6 @@ void png_file_write(const char* restrict path, const uint8_t* restrict data, con
         free(row_pointers[y]);
     }
     free(row_pointers);
+    
     fclose(file);
-    printf("succesfully writed PNG file '%s'\n", path);
 }
