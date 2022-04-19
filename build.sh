@@ -13,11 +13,7 @@ flags=(
     -Wall
     -Wextra
     -O2
-)
-
-inc=(
-    -I./
-    -Iinclude/
+    -I.
 )
 
 lib=(
@@ -28,20 +24,20 @@ lib=(
 
 dlib() {
     if echo "$OSTYPE" | grep -q "darwin"; then
-        $cc ${flags[*]} ${inc[*]} ${lib[*]} -dynamiclib ${src[*]} -o lib$name.dylib
+        $cc ${flags[*]} ${lib[*]} -dynamiclib ${src[*]} -o lib$name.dylib
     elif echo "$OSTYPE" | grep -q "linux"; then
-        $cc -shared ${flags[*]} ${inc[*]} ${lib[*]} -fPIC ${src[*]} -o lib$name.so 
+        $cc -shared ${flags[*]} ${lib[*]} -fPIC ${src[*]} -o lib$name.so 
     else
         echo "OS is not supported yet..." && exit
     fi
 }
 
 slib() {
-    $cc ${flags[*]} ${inc[*]} -c ${src[*]} && ar -cr lib$name.a *.o && rm *.o
+    $cc ${flags[*]} -c ${src[*]} && ar -cr lib$name.a *.o && rm *.o
 }
 
 compile() {
-    $cc $name.c ${flags[*]} ${inc[*]} -L. -l$name ${lib[*]} -o $name
+    $cc $name.c ${flags[*]} -L. -l$name ${lib[*]} -o $name
 }
 
 cleanf() {
