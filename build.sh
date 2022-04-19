@@ -22,17 +22,17 @@ lib=(
     -ljpeg
 )
 
-dlib() {
+shared() {
     if echo "$OSTYPE" | grep -q "darwin"; then
         $cc ${flags[*]} ${lib[*]} -dynamiclib ${src[*]} -o lib$name.dylib
     elif echo "$OSTYPE" | grep -q "linux"; then
         $cc -shared ${flags[*]} ${lib[*]} -fPIC ${src[*]} -o lib$name.so 
     else
-        echo "OS is not supported yet..." && exit
+        echo "This OS is not supported yet..." && exit
     fi
 }
 
-slib() {
+static() {
     $cc ${flags[*]} -c ${src[*]} && ar -cr lib$name.a *.o && rm *.o
 }
 
@@ -53,23 +53,23 @@ clean() {
 }
 
 install() {
-    [ "$EUID" -ne 0 ] && echo "Run with sudo to install" && exit
+    [ "$EUID" -ne 0 ] && echo "Run with sudo to install." && exit
 
-    dlib && slib && compile
+    shared && static && compile
 
-    cp $name.h /usr/local/include
+    cp $name.h /usr/local/include/
 
-    [ -f $name ] && mv $name /usr/local/bin
-    [ -f lib$name.a ] && mv lib$name.a /usr/local/lib/lib$name.a
-    [ -f lib$name.so ] && mv lib$name.so /usr/local/lib/lib$name.so
-    [ -f lib$name.dylib ] && mv lib$name.dylib /usr/local/lib/lib$name.dylib
+    [ -f $name ] && mv $name /usr/local/bin/
+    [ -f lib$name.a ] && mv lib$name.a /usr/local/lib/
+    [ -f lib$name.so ] && mv lib$name.so /usr/local/lib/
+    [ -f lib$name.dylib ] && mv lib$name.dylib /usr/local/lib/
 
-    echo "Successfully installed imgtool"
+    echo "Successfully installed $name."
     return 0
 }
 
 uninstall() {
-    [ "$EUID" -ne 0 ] && echo "Run with sudo to uninstall" && exit
+    [ "$EUID" -ne 0 ] && echo "Run with sudo to uninstall." && exit
 
     cleanf /usr/local/bin/$name
     cleanf /usr/local/include/$name.h
@@ -77,17 +77,17 @@ uninstall() {
     cleanf /usr/local/lib/lib$name.so
     cleanf /usr/local/lib/lib$name.dylib
 
-    echo "Successfully uninstalled imgtool"
+    echo "Successfully uninstalled $name."
     return 0
 }
 
 case "$1" in
     "shared")
-        dlib;;
+        shared;;
     "static")
-        slib;;
+        static;;
     "comp")
-        slib && compile;;
+        shared && compile;;
     "install")
         install;;
     "uninstall")
@@ -97,6 +97,6 @@ case "$1" in
     *)
         echo "Use 'shared' or 'static' to build the library."
         echo "Use 'comp' to compile the imgtool terminal tool."
-        echo "Use 'install' to install imgtool in /usr/local."
+        echo "Use 'install' to build and install imgtool in /usr/local."
         echo "Use 'clean' to remove local builds.";;
 esac
