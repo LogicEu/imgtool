@@ -40,3 +40,4 @@ void ppm_file_write(const char* restrict path, const uint8_t* restrict img, cons
     
     fclose(file);
 }
+

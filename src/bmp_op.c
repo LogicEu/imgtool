@@ -325,3 +325,4 @@ bmp_t bmp_scale_lerp(const bmp_t* restrict bmp, const float f)
     bmp_free(&temp);
     return ret;
 }
+

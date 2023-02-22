@@ -485,3 +485,4 @@ void gd_close_gif(gd_GIF *gif)
     close(gif->fd);
     free(gif);
 }
+

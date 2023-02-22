@@ -291,3 +291,4 @@ void ge_close_gif(ge_GIF* gif)
     close(gif->fd);
     free(gif);
 }
+

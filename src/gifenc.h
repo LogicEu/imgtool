@@ -28,4 +28,5 @@ void ge_close_gif(ge_GIF* gif);
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif /* GIFENC_H */
+

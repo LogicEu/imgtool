@@ -1,45 +1,69 @@
 # imgtool makefile
 
-STD=-std=c99
-WFLAGS=-Wall -Wextra
-OPT=-O2
-IDIR=-I.
-LIBS=-lz -lpng -ljpeg
-CC=gcc
-NAME=imgtool
-SRC=src/*.c src/gif/*.c
+NAME = imgtool
 
-CFLAGS=$(STD) $(WFLAGS) $(OPT) $(IDIR)
+CC = gcc
+STD = -std=c99
+WFLAGS = -Wall -Wextra -pedantic
+OPT = -O2
+INC = -I.
+LIBS = -lz -lpng -ljpeg
 
-LPATH=$(patsubst %,lib%.a,$(NAME))
-LFLAGS=-L.
-LFLAGS += $(patsubst %,-l%,$(NAME))
-LFLAGS += $(LIBS)
+SRCDIR = src
+TMPDIR = tmp
+BINDIR = bin
+
+SCRIPT = build.sh
+SRC = $(wildcard $(SRCDIR)/*.c)
+OBJS = $(patsubst $(SRCDIR)/%.c,$(TMPDIR)/%.o,$(SRC))
 
 OS=$(shell uname -s)
 ifeq ($(OS),Darwin)
-	OSFLAGS=-dynamiclib
-	LIB=lib$(NAME).dylib
+	DLIB = -dynamiclib
+	SUFFIX = .dylib
 else
-	OSFLAGS=-shared -fPIC
-	LIB=lib$(NAME).so
+	DLIB = -shared -fPIC
+	SUFFIX = .so
 endif
 
-$(LPATH): $(SRC)
-	$(CC) $(CFLAGS) -c $^ && ar -cr $@ *.o && rm *.o
+TARGET = $(BINDIR)/lib$(NAME)
+LIBNAME = $(TARGET)$(SUFFIX)
 
-$(NAME): $(LPATH) $(NAME).c
-	$(CC) -o $@ $(NAME).c $(CFLAGS) $(LFLAGS)
+CFLAGS = $(STD) $(WFLAGS) $(OPT) $(INC)
 
-shared: $(SRC)
-	$(CC) -o $(LIB) $(SRC) $(CFLAGS) $(LIBS) $(OSFLAGS)
+$(TARGET).a: $(BINDIR) $(OBJS)
+	ar -cr $@ $(OBJS)
 
-clean: build.sh
+$(NAME): $(NAME).c $(TARGET).a
+	$(CC) -o $@ $< $(CFLAGS) -Lbin -l$(NAME) $(LIBS)
+
+.PHONY: exe shared all clean install uninstall
+
+exe: $(NAME)
+
+shared: $(LIBNAME)
+
+all: $(LIBNAME) $(NAME)
+
+$(LIBNAME): $(BINDIR) $(OBJS)
+	$(CC) $(CFLAGS) $(LIBS) $(DLIB) -o $@ $(OBJS)
+
+$(TMPDIR)/%.o: $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJS): | $(TMPDIR)
+
+$(TMPDIR):
+	mkdir -p $@
+
+$(BINDIR):
+	mkdir -p $@
+
+clean: $(SCRIPT)
 	./$^ $@
 
-install: build.sh
+install: $(SCRIPT)
 	./$^ $@
 
-uninstall: build.sh
+uninstall: $(SCRIPT)
 	./$^ $@
-

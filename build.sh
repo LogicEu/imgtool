@@ -1,83 +1,105 @@
 #!/bin/bash
 
 cc=gcc
+src=src/*.c
 name=imgtool
-
-src=(
-    src/*.c
-    src/gif/*.c
-)
+lib=lib$name
 
 flags=(
     -std=c99
     -Wall
     -Wextra
+    -pedantic
     -O2
     -I.
 )
 
-lib=(
+libs=(
     -lz
     -lpng
     -ljpeg
 )
 
+if echo "$OSTYPE" | grep -q "darwin"; then
+    dlib=(
+        -dynamiclib
+    )
+    suffix=.dylib
+elif echo "$OSTYPE" | grep -q "linux"; then
+    dlib=(
+        -shared
+        -fPIC
+    )
+    suffix=.so
+else
+    echo "This OS is not supported by this shell script yet..." && exit
+fi
+
+cmd() {
+    echo "$@" && $@
+}
+
+exe() {
+    [ ! -f bin/$lib.a ] && echo "Use 'static' before building executable" && exit
+    cmd $cc $name.c -o $name ${flags[*]} -Lbin -l$name ${libs[*]}
+}
+
 shared() {
-    if echo "$OSTYPE" | grep -q "darwin"; then
-        $cc ${flags[*]} ${lib[*]} -dynamiclib ${src[*]} -o lib$name.dylib
-    elif echo "$OSTYPE" | grep -q "linux"; then
-        $cc -shared ${flags[*]} ${lib[*]} -fPIC ${src[*]} -o lib$name.so 
-    else
-        echo "This OS is not supported yet..." && exit
-    fi
+    cmd mkdir -p tmp
+    cmd $cc -c $src ${flags[*]} && cmd mv *.o tmp/ || exit
+    
+    cmd mkdir -p bin
+    cmd $cc tmp/*.o -o bin/$lib$suffix ${libs[*]} ${dlib[*]}
 }
 
 static() {
-    $cc ${flags[*]} -c ${src[*]} && ar -cr lib$name.a *.o && rm *.o
+    cmd mkdir -p tmp
+    cmd $cc ${flags[*]} -c $src && cmd mv *.o tmp/ || exit
+    
+    cmd mkdir -p bin
+    cmd ar -cr bin/$lib.a tmp/*.o
 }
 
-compile() {
-    $cc $name.c ${flags[*]} -L. -l$name ${lib[*]} -o $name
+cleand() {
+    [ -d $1 ] && cmd rm -r $1
 }
 
 cleanf() {
-    [ -f $1 ] && rm $1 && echo "deleted $1"
+    [ -f $1 ] && cmd rm $1
 }
 
 clean() {
     cleanf $name
-    cleanf lib$name.a
-    cleanf lib$name.so
-    cleanf lib$name.dylib
+    cleand bin
+    cleand tmp
     return 0
 }
 
 install() {
-    [ "$EUID" -ne 0 ] && echo "Run with sudo to install." && exit
+    [ "$EUID" -ne 0 ] && echo "Run with sudo to install" && exit
+    
+    make all -j # or static && shared && exe
+    cmd cp $name.h /usr/local/include/
+    cmd cp $name  /usr/local/bin/
 
-    shared && static && compile
-
-    cp $name.h /usr/local/include/
-
-    [ -f $name ] && mv $name /usr/local/bin/
-    [ -f lib$name.a ] && mv lib$name.a /usr/local/lib/
-    [ -f lib$name.so ] && mv lib$name.so /usr/local/lib/
-    [ -f lib$name.dylib ] && mv lib$name.dylib /usr/local/lib/
-
-    echo "Successfully installed $name."
+    [ -f bin/$lib.a ] && cmd mv bin/$lib.a /usr/local/lib
+    [ -f bin/$lib.so ] && cmd mv bin/$lib.so /usr/local/lib
+    [ -f bin/$lib.dylib ] && cmd mv bin/$lib.dylib /usr/local/lib
+    
+    echo "Successfully installed $name"
     return 0
 }
 
 uninstall() {
-    [ "$EUID" -ne 0 ] && echo "Run with sudo to uninstall." && exit
+    [ "$EUID" -ne 0 ] && echo "Run with sudo to uninstall" && exit
 
     cleanf /usr/local/bin/$name
     cleanf /usr/local/include/$name.h
-    cleanf /usr/local/lib/lib$name.a
-    cleanf /usr/local/lib/lib$name.so
-    cleanf /usr/local/lib/lib$name.dylib
+    cleanf /usr/local/lib/$lib.a
+    cleanf /usr/local/lib/$lib.so
+    cleanf /usr/local/lib/$lib.dylib
 
-    echo "Successfully uninstalled $name."
+    echo "Successfully uninstalled $name"
     return 0
 }
 
@@ -86,17 +108,20 @@ case "$1" in
         shared;;
     "static")
         static;;
-    "comp")
-        shared && compile;;
+    "exe")
+        exe;;
+    "all")
+        shared && static && exe;;
+    "make")
+        make all -j;;
+    "clean")
+        clean;;
     "install")
         install;;
     "uninstall")
         uninstall;;
-    "clean")
-        clean;;
     *)
-        echo "Use 'shared' or 'static' to build the library."
-        echo "Use 'comp' to compile the imgtool terminal tool."
-        echo "Use 'install' to build and install imgtool in /usr/local."
-        echo "Use 'clean' to remove local builds.";;
+        echo "Run with 'shared', 'static' or 'exe' to build library or executable"
+        echo "Use 'install' to build and install in /usr/local"
+        echo "Use 'clean' to remove local builds"
 esac

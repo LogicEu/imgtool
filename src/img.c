@@ -168,3 +168,4 @@ void img_set_jpeg_quality(const int quality)
 {
     jpeg_quality = quality;
 }
+

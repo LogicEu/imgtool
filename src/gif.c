@@ -7,8 +7,8 @@
  -> GIF save and load  <- 
 *************************/
 
-#include "gif/gifenc.h"
-#include "gif/gifdec.h"
+#include "gifenc.h"
+#include "gifdec.h"
 
 #define absi(i) ((i) * ((i) >= 0) - (i) * ((i) < 0))
 #define px3_at(buff, width, x, y) (buff + (((y) * (width)) + (x)) * 3)
@@ -189,3 +189,4 @@ gif_t* bmp_to_gif(const bmp_t* restrict bitmaps, const unsigned int count)
     }
     return gif;
 }
+

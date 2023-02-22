@@ -180,3 +180,4 @@ uint8_t* jpeg_decompress(const uint8_t* restrict data, const unsigned int size)
 	jpeg_destroy_decompress(&cinfo);
     return bmp_buffer;
 }
+

@@ -161,3 +161,4 @@ bmp_t bmp_scale_lerp(const bmp_t* bmp, const float f);
 }
 #endif
 #endif
+

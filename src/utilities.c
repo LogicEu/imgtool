@@ -62,3 +62,4 @@ uint8_t* rgba_to_rgb(const uint8_t* restrict buffer, const unsigned int width, c
     }
     return ret;
 }
+

@@ -442,3 +442,4 @@ int main(int argc, char** argv)
     free(bitmaps);
     return EXIT_SUCCESS;
 }
+

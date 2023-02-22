@@ -134,3 +134,4 @@ void png_file_write(const char* restrict path, const uint8_t* restrict data, con
     
     fclose(file);
 }
+

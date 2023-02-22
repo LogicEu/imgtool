@@ -63,3 +63,4 @@ void bmp_free(bmp_t* bitmap)
         free(bitmap->pixels);
     }
 }
+
