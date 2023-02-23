@@ -16,7 +16,7 @@ uint8_t* ppm_file_load(const char* restrict path, unsigned int* width, unsigned 
 
     char header[256];
     fgets(header, 256, file);
-    sscanf(header, "P6 %d %d 255", width, height);
+    sscanf(header, "P6 %u %u 255", width, height);
 
     uint8_t* ret = (uint8_t*)malloc(*width * *height * 3);
     fread(ret, 3, *width * *height, file);
@@ -34,7 +34,7 @@ void ppm_file_write(const char* restrict path, const uint8_t* restrict img, cons
     }
 
     char buff[256];
-    int rc = sprintf(buff, "P6 %d %d 255\n", width, height);
+    int rc = sprintf(buff, "P6 %u %u 255\n", width, height);
     fwrite(buff, rc, 1, file);
     fwrite(img, 3, width * height, file);
     
